@@ -1,0 +1,16 @@
+Introduction:
+-> Primary motive: Correctness
+
+Kinds of undesired behaviour:
+->Confidentiality, Integrity, Availability.
+
+Vulnerability: defect in software.
+
+Flaw: defect in software design.
+Bug : defect in implementation.
+
+Software Security (Black box and White box)
+
+Black Box Security:
+-> Operating System Security.
+-> Network Monitoring (Firewall, IDSs)
