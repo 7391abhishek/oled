@@ -1,0 +1,459 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="CERN%20Computer%20Security%20Information_files/style.css" type="text/css">
+<script type="text/javascript" src="CERN%20Computer%20Security%20Information_files/jquery.js"></script>
+<title>CERN Computer Security Information</title>
+<script type="text/javascript">
+ $(document).ready(function(){
+   // Menu highlight
+   var path = location.pathname.split("/");
+   if ( path ) {
+      $('#main_menu a[href*="' + path[2] + '"][class!="noselect"]').addClass('selected'); // path[3] = /security/<xxxxx>/
+      $('#sidebar ul.sidemenu li[class!="noselect"]:has(a[href$="' + path.reverse()[0] + '"])').addClass('selected');
+   }
+
+   // Add icon to external links
+   $('a[id!=logo-img]').filter(function() {
+     return this.hostname && this.hostname !== location.hostname;
+   }).after(' <img src="/security/images/external_link.png" alt="external link" title="external link"/>');
+
+});
+</script>
+</head>
+
+<body>
+<div id="wrap">
+    <div id="top-bg"></div>
+    <!--header -->
+    <div id="header">
+      <div id="logo-text">
+        <a id="logo-img" href="http://www.cern.ch/"><img src="CERN%20Computer%20Security%20Information_files/CERNLogo.png" alt="CERN Logo"></a><div id="logo-text-big"><a href="https://security.web.cern.ch/security/home/en/index.shtml" title="">CERN Computer Security</a></div>
+      </div>
+      <div id="header-logo"><a href="https://security.web.cern.ch/security/services/en/emergency.shtml"><img src="CERN%20Computer%20Security%20Information_files/emergency.png" alt="Computer Emergencies" width="335"></a></div>
+
+
+    </div>
+    <!--header ends-->
+    <div id="header-photo"></div>
+
+    <!-- navigation starts-->
+    <div id="nav">
+      <ul id="main_menu">
+	<li><a class="noselect" href="https://security.web.cern.ch/security/home/fr/index.shtml"><img src="CERN%20Computer%20Security%20Information_files/fr.png" alt="FR"></a></li> 
+        <li><a href="https://security.web.cern.ch/security/home/en/index.shtml">Home</a></li>
+        <li><a href="https://security.web.cern.ch/security/rules/en/index.shtml">Computing Rules</a></li>
+        <li><a class="selected" href="https://security.web.cern.ch/security/recommendations/en/index.shtml">Recommendations</a></li>
+        <li><a href="https://security.web.cern.ch/security/training/en/index.shtml">Training</a></li>
+        <li><a href="https://security.web.cern.ch/security/services/en/index.shtml">Services</a></li>
+        <li><a class="secured" href="https://security.web.cern.ch/security/reports/en/index.shtml">Reports &amp; Presentations</a></li>
+      </ul>
+    </div>
+    <!-- navigation ends-->
+
+    <!-- content-wrap starts -->
+    <div id="content-wrap">
+      <div id="main">
+<h2><a name="common_vulnerabilities_guide_for_c_programmers" id="common_vulnerabilities_guide_for_c_programmers">Common vulnerabilities guide for C programmers</a></h2>
+<div class="level1">
+</div>
+<h4><a name="intro" id="intro">Intro</a></h4>
+<div class="level3">
+<p>
+Most vulnerabilities in C are related to <a href="http://en.wikipedia.org/wiki/Buffer_overflow" class="urlextern" title="http://en.wikipedia.org/wiki/Buffer_overflow" rel="nofollow">buffer overflows</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link">
+ and string manipulation. In most cases, this would result in a 
+segmentation fault, but specially crafted malicious input values, 
+adapted to the architecture and environment could yield to arbitrary 
+code execution. You will find below a list of the most common errors and
+ suggested fixes/solutions. (<em>Some tips for C++ are available <a href="https://security.web.cern.ch/security/recommendations/en/codetools/cpp.shtml" class="wikilink1">here</a>.</em>)
+</p>
+</div>
+<h4><a name="gets" id="gets">gets</a></h4>
+<div class="level3">
+<p>
+The stdio <tt>gets()</tt> function does not check for buffer length and always results in a vulnerability.
+</p>
+</div>
+<h5><a name="vulnerable_code" id="vulnerable_code">Vulnerable code</a></h5>
+<div class="level4">
+<pre class="code c"><span class="co2">#include &lt;stdio.h&gt;</span>
+<span class="kw4">int</span> main <span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span>
+    <span class="kw4">char</span> username<span class="br0">[</span>8<span class="br0">]</span><span class="sy0">;</span>
+    <span class="kw4">int</span> allow <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+    <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"><span class="br0">(</span><span class="st0">"Enter your username, please: "</span><span class="br0">)</span><span class="sy0">;</span>
+    gets<span class="br0">(</span>username<span class="br0">)</span><span class="sy0">;</span> <span class="co1">// user inputs "malicious"</span>
+    <span class="kw1">if</span> <span class="br0">(</span>grantAccess<span class="br0">(</span>username<span class="br0">)</span><span class="br0">)</span> <span class="br0">{</span>
+        allow <span class="sy0">=</span> <span class="nu0">1</span><span class="sy0">;</span>
+    <span class="br0">}</span>
+    <span class="kw1">if</span> <span class="br0">(</span>allow <span class="sy0">!=</span> <span class="nu0">0</span><span class="br0">)</span> <span class="br0">{</span> <span class="co1">// has been overwritten by the overflow of the username.</span>
+        privilegedAction<span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span>
+    <span class="br0">}</span>
+    <span class="kw1">return</span> <span class="nu0">0</span><span class="sy0">;</span>
+<span class="br0">}</span>
+<span class="br0"></span>
+</pre>
+</div>
+<h5><a name="mitigation" id="mitigation">Mitigation</a></h5>
+<div class="level4">
+<p>
+Prefer using fgets (and dynamically allocated memory!): 
+</p>
+<pre class="code c"><span class="co2">#include &lt;stdio.h&gt;</span>
+<span class="co2">#include &lt;stdlib.h&gt;</span>
+<span class="co2">#define LENGTH 8</span>
+<span class="kw4">int</span> main <span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span>
+    <span class="kw4">char</span><span class="sy0">*</span> username<span class="sy0">,</span> <span class="sy0">*</span>nlptr<span class="sy0">;</span>
+    <span class="kw4">int</span> allow <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+&nbsp;
+    username <span class="sy0">=</span> malloc<span class="br0">(</span>LENGTH <span class="sy0">*</span> <span class="kw4">sizeof</span><span class="br0">(</span><span class="sy0">*</span>username<span class="br0">)</span><span class="br0">)</span><span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">(</span><span class="sy0">!</span>username<span class="br0">)</span>
+        <span class="kw1">return</span> EXIT_FAILURE<span class="sy0">;</span>
+    <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"><span class="br0">(</span><span class="st0">"Enter your username, please: "</span><span class="br0">)</span><span class="sy0">;</span>
+    fgets<span class="br0">(</span>username<span class="sy0">,</span>LENGTH<span class="sy0">,</span> stdin<span class="br0">)</span><span class="sy0">;</span>
+    <span class="co1">// fgets stops after LENGTH-1 characters or at a newline character, which ever comes first.</span>
+    <span class="co1">// but it considers \n a valid character, so you might want to remove it:</span>
+    nlptr <span class="sy0">=</span> strchr<span class="br0">(</span>username<span class="sy0">,</span> <span class="st0">'<span class="es1">\n</span>'</span><span class="br0">)</span><span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">(</span>nlptr<span class="br0">)</span> <span class="sy0">*</span>nlptr <span class="sy0">=</span> <span class="st0">'<span class="es5">\0</span>'</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">(</span>grantAccess<span class="br0">(</span>username<span class="br0">)</span><span class="br0">)</span> <span class="br0">{</span>
+        allow <span class="sy0">=</span> <span class="nu0">1</span><span class="sy0">;</span>
+    <span class="br0">}</span>
+    <span class="kw1">if</span> <span class="br0">(</span>allow <span class="sy0">!=</span> 0<span class="br0">)</span> <span class="br0">{</span>
+        priviledgedAction<span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span>
+    <span class="br0">}</span>
+&nbsp;
+    free<span class="br0">(</span>username<span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">return</span> <span class="nu0">0</span><span class="sy0">;</span>
+<span class="br0">}</span>
+<span class="br0"></span>
+</pre>
+</div>
+<h4><a name="strcpy" id="strcpy">strcpy</a></h4>
+<div class="level3">
+<p>
+The <tt>strcpy</tt> built-in function does not check buffer lengths and 
+may very well overwrite memory zone contiguous to the intended 
+destination. In fact, the whole family of functions is similarly 
+vulnerable: <tt>strcpy</tt>, <tt>strcat</tt> and <tt>strcmp</tt>.
+</p>
+</div>
+<h5><a name="vulnerable_code1" id="vulnerable_code1">Vulnerable code</a></h5>
+<div class="level4">
+<pre class="code c"><span class="kw4">char</span> str1<span class="br0">[</span>10<span class="br0">]</span><span class="sy0">;</span>
+<span class="kw4">char</span> str2<span class="br0">[</span><span class="br0">]</span><span class="sy0">=</span><span class="st0">"abcdefghijklmn"</span><span class="sy0">;</span>
+strcpy<span class="br0">(</span>str1<span class="sy0">,</span>str2<span class="br0">)</span><span class="sy0">;</span></pre>
+</div>
+<h5><a name="mitigation1" id="mitigation1">Mitigation</a></h5>
+<div class="level4">
+<p>
+The best way to mitigate this issue is to use <tt>strlcpy</tt> if it is 
+readily available (which is only the case on BSD systems). However, it 
+is very simple to define it yourself, as shown below:
+</p>
+<pre class="code c"><span class="co2">#include &lt;stdio.h&gt;</span>
+&nbsp;
+<span class="co2">#ifndef strlcpy</span>
+<span class="co2">#define strlcpy(dst,src,sz) snprintf((dst), (sz), "%s", (src))</span>
+<span class="co2">#endif</span>
+&nbsp;
+<span class="kw2">enum</span> <span class="br0">{</span> BUFFER_SIZE <span class="sy0">=</span> 10 <span class="br0">}</span><span class="sy0">;</span>
+&nbsp;
+<span class="kw4">int</span> main<span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span>
+    <span class="kw4">char</span> dst<span class="br0">[</span>BUFFER_SIZE<span class="br0">]</span><span class="sy0">;</span>
+    <span class="kw4">char</span> src<span class="br0">[</span><span class="br0">]</span> <span class="sy0">=</span> <span class="st0">"abcdefghijk"</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw4">int</span> buffer_length <span class="sy0">=</span> strlcpy<span class="br0">(</span>dst<span class="sy0">,</span> src<span class="sy0">,</span> BUFFER_SIZE<span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">(</span>buffer_length <span class="sy0">&gt;=</span> BUFFER_SIZE<span class="br0">)</span> <span class="br0">{</span>
+        <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"><span class="br0">(</span><span class="st0">"String too long: %d (%d expected)<span class="es1">\n</span>"</span><span class="sy0">,</span>
+                buffer_length<span class="sy0">,</span> BUFFER_SIZE<span class="sy0">-</span>1<span class="br0">)</span><span class="sy0">;</span>
+    <span class="br0">}</span>
+&nbsp;
+    <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"><span class="br0">(</span><span class="st0">"String copied: %s<span class="es1">\n</span>"</span><span class="sy0">,</span> dst<span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">return</span> <span class="nu0">0</span><span class="sy0">;</span>
+<span class="br0">}</span>
+</pre>
+<p>
+Another and may be slightly less convenient way is to use <tt>strncpy</tt>, which prevents buffer overflows, but does not guarantee '\0'-termination.
+</p>
+<pre class="code c"><span class="kw2">enum</span> <span class="br0">{</span> BUFFER_SIZE <span class="sy0">=</span> 10 <span class="br0">}</span><span class="sy0">;</span>
+<span class="kw4">char</span> str1<span class="br0">[</span>BUFFER_SIZE<span class="br0">]</span><span class="sy0">;</span>
+<span class="kw4">char</span> str2<span class="br0">[</span><span class="br0">]</span><span class="sy0">=</span><span class="st0">"abcdefghijklmn"</span><span class="sy0">;</span>
+&nbsp;
+strncpy<span class="br0">(</span>str1<span class="sy0">,</span>str2<span class="sy0">,</span> BUFFER_SIZE<span class="br0">)</span><span class="sy0">;</span> <span class="coMULTI">/* limit number of characters to be copied */</span>
+<span class="co1">// We need to set the limit to BUFFER_SIZE, so that all characters in the buffer</span>
+<span class="co1">// are set to '\0'. If the source buffer is longer than BUFFER_SIZE, all the '\0'</span>
+<span class="co1">// characters will be overwritten and the copy will be truncated.</span>
+&nbsp;
+<span class="kw1">if</span> <span class="br0">(</span>str1<span class="br0">[</span>BUFFER_SIZE<span class="sy0">-</span><span class="nu0">1</span><span class="br0">]</span> <span class="sy0">!=</span> <span class="st0">'<span class="es5">\0</span>'</span><span class="br0">)</span> <span class="br0">{</span>
+    <span class="coMULTI">/* buffer was truncated, handle error? */</span>
+<span class="br0">}</span>
+<span class="br0"></span>
+</pre>
+<p>
+For the other functions in the family, the <tt>*n*</tt> variants exist as well: <tt>strncpm</tt> and <tt>strncat</tt>
+</p>
+</div>
+<h4><a name="sprintf" id="sprintf">sprintf</a></h4>
+<div class="level3">
+<p>
+Just as the previous functions, <tt>sprintf</tt> does not check the buffer boundaries and is vulnerable to overflows.
+</p>
+</div>
+<h5><a name="vulnerable_code2" id="vulnerable_code2">Vulnerable code</a></h5>
+<div class="level4">
+<pre class="code c"><span class="co2">#include &lt;stdio.h&gt;</span>
+<span class="co2">#include &lt;stdlib.h&gt;</span>
+&nbsp;
+<span class="kw2">enum</span> <span class="br0">{</span> BUFFER_SIZE <span class="sy0">=</span> 10 <span class="br0">}</span><span class="sy0">;</span>
+&nbsp;
+<span class="kw4">int</span> main<span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span>
+    <span class="kw4">char</span> buffer<span class="br0">[</span>BUFFER_SIZE<span class="br0">]</span><span class="sy0">;</span>
+    <span class="kw4">int</span> check <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+&nbsp;
+    sprintf<span class="br0">(</span>buffer<span class="sy0">,</span> <span class="st0">"%s"</span><span class="sy0">,</span> <span class="st0">"This string is too long!"</span><span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"><span class="br0">(</span><span class="st0">"check: %d"</span><span class="sy0">,</span> check<span class="br0">)</span><span class="sy0">;</span> <span class="coMULTI">/* This will not print 0! */</span>
+&nbsp;
+    <span class="kw1">return</span> EXIT_SUCCESS<span class="sy0">;</span>
+<span class="br0">}</span></pre>
+</div>
+<h5><a name="mitigation2" id="mitigation2">Mitigation</a></h5>
+<div class="level4">
+<p>
+Prefer using <tt>snprintf</tt>, which has the double advantage of 
+preventing buffers overflows and returning the minimal size of buffer 
+needed to fit the whole formatted string.
+</p>
+<pre class="code c"><span class="co2">#include &lt;stdio.h&gt;</span>
+<span class="co2">#include &lt;stdlib.h&gt;</span>
+&nbsp;
+<span class="kw2">enum</span> <span class="br0">{</span> BUFFER_SIZE <span class="sy0">=</span> 10 <span class="br0">}</span><span class="sy0">;</span>
+&nbsp;
+<span class="kw4">int</span> main<span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span>
+    <span class="kw4">char</span> buffer<span class="br0">[</span>BUFFER_SIZE<span class="br0">]</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw4">int</span> length <span class="sy0">=</span> snprintf<span class="br0">(</span>buffer<span class="sy0">,</span> BUFFER_SIZE<span class="sy0">,</span> <span class="st0">"%s%s"</span><span class="sy0">,</span> <span class="st0">"long-name"</span><span class="sy0">,</span> <span class="st0">"suffix"</span><span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">(</span>length <span class="sy0">&gt;=</span> BUFFER_SIZE<span class="br0">)</span> <span class="br0">{</span>
+        <span class="coMULTI">/* handle string truncation! */</span>
+    <span class="br0">}</span>
+&nbsp;
+    <span class="kw1">return</span> EXIT_SUCCESS<span class="sy0">;</span>
+<span class="br0">}</span>
+<span class="br0"></span>
+</pre>
+</div>
+<h4><a name="printf_and_friends" id="printf_and_friends">printf and friends</a></h4>
+<div class="level3">
+<p>
+One other vulnerability category is concerned with <a href="http://en.wikipedia.org/wiki/Format_string_attack" class="urlextern" title="http://en.wikipedia.org/wiki/Format_string_attack" rel="nofollow">string formatting attacks</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link">, those can cause information leakage, overwriting of memory, … This error can be exploited in any of the following functions: <tt>printf</tt>, <tt>fprintf</tt>, <tt>sprintf</tt> and <tt>snprintf</tt>, <em>i.e.</em> all functions that take a “format string” as argument.
+</p>
+</div>
+<h5><a name="vulnerable_code3" id="vulnerable_code3">Vulnerable code</a></h5>
+<div class="level4">
+<pre class="code c"><span class="co2">#FormatString.c</span>
+<span class="co2">#include &lt;stdio.h&gt;</span>
+&nbsp;
+<span class="kw4">int</span> main<span class="br0">(</span><span class="kw4">int</span> argc<span class="sy0">,</span> <span class="kw4">char</span> <span class="sy0">**</span>argv<span class="br0">)</span> <span class="br0">{</span>
+    <span class="kw4">char</span> <span class="sy0">*</span>secret <span class="sy0">=</span> <span class="st0">"This is a secret!<span class="es1">\n</span>"</span><span class="sy0">;</span>
+&nbsp;
+    <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"><span class="br0">(</span>argv<span class="br0">[</span>1<span class="br0">]</span><span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">return</span> <span class="nu0">0</span><span class="sy0">;</span>
+<span class="br0">}</span></pre>
+<p>
+Now, this code, if compiled with the <tt>-mpreferred-stack-boundary=2</tt> option (<em>on a 32-bit platform; on 64-bit things work slightly differently, but the code still is vulnerable!</em>), can yield interesting results.
+</p>
+<p>
+If called with <tt>./FormatString %s</tt>, it will print the secret string.
+</p>
+<pre class="code bash">$ <span class="kw2">gcc</span> <span class="re5">-mpreferred-stack-boundary</span>=2 FormatString.c <span class="re5">-o</span> FormatString
+$ .<span class="sy0">/</span>FormatString <span class="sy0">%</span>s
+This is a secret<span class="sy0">!</span>
+$</pre>
+<p>
+<strong>Note:</strong> the <tt>-mpreferred-stack-boundary=2</tt> option 
+is in no way necessary to cause information leakage and not setting it 
+does not make your code more secure by any means. It just allows for a 
+simpler and more straight forward example.
+</p>
+</div>
+<h5><a name="mitigation3" id="mitigation3">Mitigation</a></h5>
+<div class="level4">
+<p>
+It's really simple: <strong>always</strong> hardcode the format string. At least, <strong>never</strong> let it come directly from any user's input.
+</p>
+</div>
+<h4><a name="file_opening" id="file_opening">File opening</a></h4>
+<div class="level3">
+<p>
+Much care must be taken when opening files, as many issues can arise. This is covered in much detail by Kupsch and Miller in <a href="http://www.cs.wisc.edu/mist/presentations/kupsch_miller_secse08.pdf" class="urlextern" title="http://www.cs.wisc.edu/mist/presentations/kupsch_miller_secse08.pdf" rel="nofollow">this tutorial</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link">.
+ They also provide libraries implementing their approach. Out of the 
+many ways file handling can be attacked, we will only present two brief 
+examples below.
+</p>
+<p>
+Some of the basic pitfalls are described below.
+</p>
+</div>
+<h5><a name="symbolic_link_attack" id="symbolic_link_attack">Symbolic link attack</a></h5>
+<div class="level4">
+<p>
+It is a good idea to check whether a file exists or not before creating 
+it. However, a malicious user might create a file (or worse, a symbolic 
+link to a critical system file) between your check and the moment you 
+actually use the file.
+</p>
+<pre class="code c"><span class="co2">#include &lt;stdio.h&gt;</span>
+<span class="co2">#include &lt;stdlib.h&gt;</span>
+<span class="co2">#include &lt;unistd.h&gt;</span>
+&nbsp;
+<span class="co2">#define MY_TMP_FILE "/tmp/file.tmp"</span>
+&nbsp;
+&nbsp;
+<span class="kw4">int</span> main<span class="br0">(</span><span class="kw4">int</span> argc<span class="sy0">,</span> <span class="kw4">char</span><span class="sy0">*</span> argv<span class="br0">[</span><span class="br0">]</span><span class="br0">)</span>
+<span class="br0">{</span>
+    FILE <span class="sy0">*</span> f<span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">(</span><span class="sy0">!</span>access<span class="br0">(</span>MY_TMP_FILE<span class="sy0">,</span> F_OK<span class="br0">)</span><span class="br0">)</span> <span class="br0">{</span>
+        <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"><span class="br0">(</span><span class="st0">"File exists!<span class="es1">\n</span>"</span><span class="br0">)</span><span class="sy0">;</span>
+        <span class="kw1">return</span> EXIT_FAILURE<span class="sy0">;</span>
+    <span class="br0">}</span>
+    <span class="coMULTI">/* At this point the attacker creates a symlink from /tmp/file.tmp to /etc/passwd */</span>
+    tmpFile <span class="sy0">=</span> fopen<span class="br0">(</span>MY_TMP_FILE<span class="sy0">,</span> <span class="st0">"w"</span><span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">(</span>tmpFile <span class="sy0">==</span> NULL<span class="br0">)</span> <span class="br0">{</span>
+        <span class="kw1">return</span> EXIT_FAILURE<span class="sy0">;</span>
+    <span class="br0">}</span>
+&nbsp;
+    fputs<span class="br0">(</span><span class="st0">"Some text...<span class="es1">\n</span>"</span><span class="sy0">,</span> tmpFile<span class="br0">)</span><span class="sy0">;</span>
+&nbsp;
+    fclose<span class="br0">(</span>tmpFile<span class="br0">)</span><span class="sy0">;</span>
+    <span class="coMULTI">/* You successfully overwrote /etc/passwd (at least if you ran this as root) */</span>
+&nbsp;
+    <span class="kw1">return</span> EXIT_SUCCESS<span class="sy0">;</span>
+<span class="br0">}</span>
+<span class="br0"></span>
+</pre>
+</div>
+<h5><a name="mitigation4" id="mitigation4">Mitigation</a></h5>
+<div class="level4">
+<p>
+Avoid the race condition by accessing directly the file, and don't overwrite it if it already exists. So,
+</p>
+<pre class="code c"><span class="co2">#include &lt;unistd.h&gt;</span>
+<span class="co2">#include &lt;stdio.h&gt;</span>
+<span class="co2">#include &lt;fcntl.h&gt;</span>
+<span class="co2">#include &lt;stdlib.h&gt;</span>
+&nbsp;
+<span class="co2">#define MY_TMP_FILE "/tmp/file.tmp"</span>
+&nbsp;
+<span class="kw2">enum</span> <span class="br0">{</span> FILE_MODE <span class="sy0">=</span> 0600 <span class="br0">}</span><span class="sy0">;</span>
+&nbsp;
+<span class="kw4">int</span> main<span class="br0">(</span><span class="kw4">int</span> argc<span class="sy0">,</span> <span class="kw4">char</span><span class="sy0">*</span> argv<span class="br0">[</span><span class="br0">]</span><span class="br0">)</span>
+<span class="br0">{</span>
+    <span class="kw4">int</span> fd<span class="sy0">;</span>
+    FILE<span class="sy0">*</span> f<span class="sy0">;</span>
+&nbsp;
+    <span class="coMULTI">/* Remove possible symlinks */</span>
+    unlink<span class="br0">(</span>MY_TMP_FILE<span class="br0">)</span><span class="sy0">;</span>
+    <span class="coMULTI">/* Open, but fail if someone raced us and restored the symlink (secure version of fopen(path, "w") */</span>
+    fd <span class="sy0">=</span> open<span class="br0">(</span>MY_TMP_FILE<span class="sy0">,</span> O_WRONLY<span class="sy0">|</span>O_CREAT<span class="sy0">|</span>O_EXCL<span class="sy0">,</span> FILE_MODE<span class="br0">)</span><span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">(</span>fd <span class="sy0">==</span> <span class="sy0">-</span><span class="nu0">1</span><span class="br0">)</span> <span class="br0">{</span>
+        perror<span class="br0">(</span><span class="st0">"Failed to open the file"</span><span class="br0">)</span><span class="sy0">;</span>
+        <span class="kw1">return</span> EXIT_FAILURE<span class="sy0">;</span>
+    <span class="br0">}</span>
+    <span class="coMULTI">/* Get a FILE*, as they are easier and more efficient than plan file descriptors */</span>
+    f <span class="sy0">=</span> fdopen<span class="br0">(</span>fd<span class="sy0">,</span> <span class="st0">"w"</span><span class="br0">)</span><span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">(</span>f <span class="sy0">==</span> NULL<span class="br0">)</span> <span class="br0">{</span>
+        perror<span class="br0">(</span><span class="st0">"Failed to associate file descriptor with a stream"</span><span class="br0">)</span><span class="sy0">;</span>
+        <span class="kw1">return</span> EXIT_FAILURE<span class="sy0">;</span>
+    <span class="br0">}</span>
+    fprintf<span class="br0">(</span>f<span class="sy0">,</span> <span class="st0">"Hello, world<span class="es1">\n</span>"</span><span class="br0">)</span><span class="sy0">;</span>
+    fclose<span class="br0">(</span>f<span class="br0">)</span><span class="sy0">;</span>
+    <span class="coMULTI">/* fd is already closed by fclose()!!! */</span>
+    <span class="kw1">return</span> EXIT_SUCCESS<span class="sy0">;</span>
+<span class="br0">}</span>
+<span class="br0"></span>
+</pre>
+</div>      </div>
+      <!-- main ends -->
+      <!-- SIDEBAR -->      <!-- sidebar menu starts -->
+      <div id="sidebar">
+        <h3>For All Users<br> (Experts or Not)</h3>
+        <ul class="sidemenu">
+	      <li><a href="https://security.web.cern.ch/security/recommendations/en/good_practises.shtml">Seven easy good practises</a></li>
+          <li><a href="https://security.web.cern.ch/security/recommendations/en/passwords.shtml">Passwords &amp; toothbrushes</a></li>
+          <li><a href="https://security.web.cern.ch/security/recommendations/en/2FA.shtml">Starting with multi-factor authentication</a></li>
+		  <li><a href="https://security.web.cern.ch/security/recommendations/en/bad_mails.shtml">Bad mails for you:<br>"Phishing", "SPAM" &amp; fraud</a></li>
+		  <li><a href="https://security.web.cern.ch/security/recommendations/en/malicious_email.shtml">How to identify malicious e-mails</a></li>
+          <li class="selected"><a href="https://security.web.cern.ch/security/recommendations/en/how_to_secure_your_pc.shtml">How to secure your PC or Mac</a></li>
+          <li><a href="https://security.web.cern.ch/security/recommendations/en/connecting_to_cern.shtml">Connecting to CERN</a></li>
+          <li>Encrypting <a href="https://espace.cern.ch/winservices-help/NICEEnvironment/NICEHDDencryption/Pages/Bitlocker-for-Windows-7-and-Windows-8.aspx">Windows PCs</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"> or <a href="http://information-technology.web.cern.ch/services/fe/howto/configure-filevault-encrypt-your-hard-disk">Macs</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"></li>
+          <li><a href="https://security.web.cern.ch/security/recommendations/en/ssh.shtml">Encrypting with SSH</a></li>
+          <li>More on <a href="http://cerncourier.com/cws/article/cnl/38514">Windows folders</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link">, <a href="http://cerncourier.com/cws/article/cnl/38513">Mozilla security</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"></li>
+        </ul>
+		
+        <h3>For Software Developers</h3>
+        <ul class="sidemenu">
+           <li class="selected">Good programming in <a href="https://security.web.cern.ch/security/recommendations/en/program_c.shtml">C/C++</a>,
+	    <a href="https://security.web.cern.ch/security/recommendations/en/program_java.shtml">Java</a>,
+	    <a href="https://security.web.cern.ch/security/recommendations/en/program_perl.shtml">Perl</a>,
+	    <a href="https://security.web.cern.ch/security/recommendations/en/program_php.shtml">PHP</a>, and
+	    <a href="https://security.web.cern.ch/security/recommendations/en/program_python.shtml">Python</a></li>
+           <li><a href="https://security.web.cern.ch/security/recommendations/en/password_alternatives.shtml">How to keep secrets secret<br> (alternatives to passwords)</a></li>
+           <li><a href="https://security.web.cern.ch/security/recommendations/en/checklist_for_coders.shtml">Security checklist</a></li>
+           <li><a href="https://security.web.cern.ch/security/recommendations/en/code_tools.shtml">Static code analysis tools</a></li>
+           <li><a href="https://security.web.cern.ch/security/recommendations/en/apex_applications.shtml">Securing APEX applications</a></li>
+           <li><a href="https://security.web.cern.ch/security/recommendations/en/web_applications.shtml">Securing Web applications</a></li>
+           <li><a href="https://security.web.cern.ch/security/recommendations/en/more_on_software.shtml">Further reading</a></li>
+	    </ul>
+        
+		<h3>For System Owners</h3>
+        <ul class="sidemenu">
+		<li><a href="https://security.web.cern.ch/security/recommendations/en/rootkits.shtml">Checking for rootkits</a></li>
+	    <li><a href="https://twiki.cern.ch/twiki/bin/viewauth/CNIC/WebHome">Securing control systems (CNIC)</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"></li>
+	    <li><a href="https://security.web.cern.ch/security/rules/en/baselines.shtml">Security baselines</a></li>
+	    <li><a href="http://linux.web.cern.ch/linux/docs/linux_exploit_faq.shtml"> The CERN Linux vulnerability FAQ</a> <img src="CERN%20Computer%20Security%20Information_files/external_link.png" alt="external link" title="external link"></li>
+	    </ul>
+      </div>
+      <!-- sidebar menu ends -->
+
+	
+    <!-- content-wrap ends-->	
+  </div>
+  <!-- footer starts -->		
+  <div id="footer-wrap">
+    <div id="footer-columns">
+	<a id="logo-img" href="http://www.cert.org/csirts/cert_authorized.html" target="�_blank�"><img src="CERN%20Computer%20Security%20Information_files/cert_seal.gif" alt="CERT Logo" width="70"></a>
+	</div>  
+
+    <div id="footer-bottom">		
+	© Copyright 2016<strong> <a href="mailto:Computer.Security@cern.ch">CERN Computer Security Team</a></strong>
+
+    <table>
+    <tbody><tr>
+	<td id="footer-info-left">
+	  e-mail: <a href="mailto:Computer.Security@cern.ch">Computer.Security@cern.ch</a><br>
+	  Phone: +41 22 767 0500<br> (Please listen to the recorded instructions.)
+	</td>
+	<td id="footer-info-right">
+	  Please use the following PGP key to encrypt messages sent to <br>
+	  CERN Computer Security Team &lt;<a href="mailto:Computer.Security@cern.ch">Computer.Security@cern.ch</a>&gt;<br>
+	  A9A7C562 / 322E 144D B867 5403 6747 F465 8089 8536 A9A7 C562
+	</td>
+    </tr>
+    </tbody></table>
+
+   </div>
+  </div>
+  <!-- footer ends-->
+</div>
+<!-- wrap ends here -->
+	<!--img height=30px src="/security/home/en/CERNfooter_800.png"-->
+
+
+
+</body></html>

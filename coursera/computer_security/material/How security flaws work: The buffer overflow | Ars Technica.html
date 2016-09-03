@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/init"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/event.js" type="text/javascript"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/sparrow.js" type="text/javascript"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/ars-technica.bin" type="text/javascript"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/ptrack-v0.js"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/id.js" async="async" type="text/javascript"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/id" async="async" type="text/javascript"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/arstechnica.com"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/id_002.js" async="async" type="text/javascript"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/teads-format.js" async=""></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/ga.js" async="" type="text/javascript"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/osd.js"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/bid" async="" type="text/javascript"></script><script async="" charset="UTF-8" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/get" type="text/javascript"></script>
+<title>How security flaws work: The buffer overflow | Ars Technica</title>
+    <script type="text/javascript">
+    ars = {"ASSETS":"http:\/\/cdn.arstechnica.net\/wp-content\/themes\/ars\/assets","HOME_URL":"http:\/\/arstechnica.com","LOGIN_URL":"https:\/\/arstechnica.com\/services\/login-desktop.html?v=1","CIVIS":"\/civis","THEME":"light","VIEW":"grid","MOBILE":false,"PREMIER":false,"LOGGED":false,"ENV":"production","AD":{"kw":["section_security","security","preroll","int"],"zone":"int","queue":[]},"TOTAL":76163,"UNREAD":0,"RECENT":[948213,947739,948091,947897,948045,947819,947635,946059,947547,947647,943299,947605,947595,947563,947545,947535,946181,947411,947441,947415,947329,947063,947299,947245,947193],"LOGINS":true,"CROSS":false,"GEOALERTS":true,"PARSELY":"arstechnica.com","COMMENTS":false,"HOMEPAGE":false,"COUNTRY":"us","SITE":1,"READY":[],"SHOW_ADS":true,"IMG_PROXY":"https:\/\/cdn.arstechnica.net\/i\/","CATEGORY":"security","PAGETITLE":""};
+  </script>
+
+  <link rel="stylesheet" type="text/css" media="all" href="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/main-cbbde88910.css">
+      <link rel="alternate" type="application/rss+xml" href="http://feeds.arstechnica.com/arstechnica/index/">
+  <link rel="shortcut icon" href="https://cdn.arstechnica.net/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="https://cdn.arstechnica.net/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="http://cdn.arstechnica.net/wp-content/themes/ars/assets/img/ars-ios-icon-d9a45f558c.png">
+  <link rel="icon" sizes="192x192" href="http://cdn.arstechnica.net/wp-content/themes/ars/assets/img/material-ars-db41652381.png">
+
+    <meta name="application-name" content="Ars Technica">
+  <meta name="msapplication-starturl" content="http://arstechnica.com/">
+  <meta name="msapplication-tooltip" content="Ars Technica: Serving the technologist for 1.2 decades">
+  <meta name="msapplication-task" content="name=News;action-uri=http://arstechnica.com/;icon-uri=https://cdn.arstechnica.net/favicon.ico">
+  <meta name="msapplication-task" content="name=Features;action-uri=http://arstechnica.com/features/;icon-uri=https://cdn.arstechnica.net/ie-jump-menu/jump-features.ico">
+  <meta name="msapplication-task" content="name=OpenForum;action-uri=http://arstechnica.com/civis/;icon-uri=https://cdn.arstechnica.net/ie-jump-menu/jump-forum.ico">
+  <meta name="msapplication-task" content="name=Subscribe;action-uri=http://arstechnica.com/subscriptions/;icon-uri=https://cdn.arstechnica.net/ie-jump-menu/jump-subscribe.ico">
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){var o=e[n]={exports:{}};t[n][0].call(o.exports,function(e){var o=t[n][1][e];return r(o||e)},o,o.exports)}return e[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(t,e,n){function r(){}function o(t,e,n){return function(){return i(t,[(new Date).getTime()].concat(u(arguments)),e?null:this,n),e?void 0:this}}var i=t("handle"),a=t(2),u=t(3),c=t("ee").get("tracer"),f=NREUM;"undefined"==typeof window.newrelic&&(newrelic=f);var s=["setPageViewName","setCustomAttribute","finished","addToTrace","inlineHit"],p="api-",l=p+"ixn-";a(s,function(t,e){f[e]=o(p+e,!0,"api")}),f.addPageAction=o(p+"addPageAction",!0),e.exports=newrelic,f.interaction=function(){return(new r).get()};var d=r.prototype={createTracer:function(t,e){var n={},r=this,o="function"==typeof e;return i(l+"tracer",[Date.now(),t,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[Date.now(),r,o],n),o)try{return e.apply(this,arguments)}finally{c.emit("fn-end",[Date.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(t,e){d[e]=o(l+e)}),newrelic.noticeError=function(t){"string"==typeof t&&(t=new Error(t)),i("err",[t,(new Date).getTime()])}},{}],2:[function(t,e,n){function r(t,e){var n=[],r="",i=0;for(r in t)o.call(t,r)&&(n[i]=e(r,t[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],3:[function(t,e,n){function r(t,e,n){e||(e=0),"undefined"==typeof n&&(n=t?t.length:0);for(var r=-1,o=n-e||0,i=Array(o<0?0:o);++r<o;)i[r]=t[e+r];return i}e.exports=r},{}],ee:[function(t,e,n){function r(){}function o(t){function e(t){return t&&t instanceof r?t:t?u(t,a,i):i()}function n(n,r,o){t&&t(n,r,o);for(var i=e(o),a=l(n),u=a.length,c=0;c<u;c++)a[c].apply(i,r);var s=f[m[n]];return s&&s.push([w,n,r,i]),i}function p(t,e){g[t]=l(t).concat(e)}function l(t){return g[t]||[]}function d(t){return s[t]=s[t]||o(n)}function v(t,e){c(t,function(t,n){e=e||"feature",m[n]=e,e in f||(f[e]=[])})}var g={},m={},w={on:p,emit:n,get:d,listeners:l,context:e,buffer:v};return w}function i(){return new r}var a="nr@context",u=t("gos"),c=t(2),f={},s={},p=e.exports=o();p.backlog=f},{}],gos:[function(t,e,n){function r(t,e,n){if(o.call(t,e))return t[e];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(t,e,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return t[e]=r,r}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],handle:[function(t,e,n){function r(t,e,n,r){o.buffer([t],r),o.emit(t,e,n)}var o=t("ee").get("handle");e.exports=r,r.ee=o},{}],id:[function(t,e,n){function r(t){var e=typeof t;return!t||"object"!==e&&"function"!==e?-1:t===window?0:a(t,i,function(){return o++})}var o=1,i="nr@id",a=t("gos");e.exports=r},{}],loader:[function(t,e,n){function r(){if(!h++){var t=y.info=NREUM.info,e=s.getElementsByTagName("script")[0];if(t&&t.licenseKey&&t.applicationID&&e){c(m,function(e,n){t[e]||(t[e]=n)});var n="https"===g.split(":")[0]||t.sslForHttp;y.proto=n?"https://":"http://",u("mark",["onload",a()],null,"api");var r=s.createElement("script");r.src=y.proto+t.agent,e.parentNode.insertBefore(r,e)}}}function o(){"complete"===s.readyState&&i()}function i(){u("mark",["domContent",a()],null,"api")}function a(){return(new Date).getTime()}var u=t("handle"),c=t(2),f=window,s=f.document,p="addEventListener",l="attachEvent",d=f.XMLHttpRequest,v=d&&d.prototype;NREUM.o={ST:setTimeout,CT:clearTimeout,XHR:d,REQ:f.Request,EV:f.Event,PR:f.Promise,MO:f.MutationObserver},t(1);var g=""+location,m={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-963.min.js"},w=d&&v&&v[p]&&!/CriOS/.test(navigator.userAgent),y=e.exports={offset:a(),origin:g,features:{},xhrWrappable:w};s[p]?(s[p]("DOMContentLoaded",i,!1),f[p]("load",r,!1)):(s[l]("onreadystatechange",o),f[l]("onload",r)),u("mark",["firstbyte",a()],null,"api");var h=0},{}]},{},["loader"]);</script>
+  <meta name="advertising" content="ask">
+  <meta property="fb:admins" content="592156917">
+  <meta property="fb:admins" content="108943">
+  <meta property="fb:admins" content="10103365229664579">
+
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#000000">
+
+  
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <!-- cache miss 177:single/meta:405a8a380271a3bc71cf448520f701b7 -->
+<meta name="parsely-page" content="{&quot;title&quot;:&quot;How security flaws work: The buffer overflow&quot;,&quot;link&quot;:&quot;http:\/\/arstechnica.com\/security\/2015\/08\/how-security-flaws-work-the-buffer-overflow\/&quot;,&quot;type&quot;:&quot;post&quot;,&quot;author&quot;:&quot;Peter Bright&quot;,&quot;post_id&quot;:679043,&quot;pub_date&quot;:&quot;2015-08-26T01:00:56Z&quot;,&quot;section&quot;:&quot;Risk Assessment&quot;,&quot;tags&quot;:[&quot;type: feature&quot;],&quot;image_url&quot;:&quot;http:\/\/cdn.arstechnica.net\/wp-content\/uploads\/2015\/08\/buffer-overflow-150x150.jpg&quot;}">
+<meta name="parsely-metadata" content="{&quot;type&quot;:&quot;feature&quot;,&quot;title&quot;:&quot;How security flaws work: The buffer overflow&quot;,&quot;post_id&quot;:679043,&quot;lower_deck&quot;:&quot;Starting with the 1988 Morris Worm, this flaw has bitten everyone from Linux to Windows.&quot;,&quot;image_url&quot;:&quot;http:\/\/cdn.arstechnica.net\/wp-content\/uploads\/2015\/08\/buffer-overflow-150x150.jpg&quot;,&quot;listing_image_url&quot;:&quot;http:\/\/cdn.arstechnica.net\/wp-content\/uploads\/2015\/08\/buffer-overflow-300x150.jpg&quot;}">
+
+<link rel="canonical" href="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/a_006.html">
+
+<link rel="amphtml" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?amp=1">
+
+
+<link rel="alternate" hreflang="en-gb" href="http://arstechnica.co.uk/security/2015/08/how-security-flaws-work-the-buffer-overflow/">
+<link rel="alternate" hreflang="en" href="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/a_006.html">
+
+<link rel="shorturl" href="http://arstechnica.com/?p=679043">
+
+<meta name="description" content="Starting with the 1988 Morris Worm, this flaw has bitten everyone from Linux to Windows.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/">
+<meta name="twitter:title" content="How security flaws work: The buffer overflow">
+<meta name="twitter:description" content="Starting with the 1988 Morris Worm, this flaw has bitten everyone from Linux to Windows.">
+
+<meta name="twitter:site" content="@arstechnica">
+<meta name="twitter:domain" content="arstechnica.com">
+
+<meta property="og:site_name" content="Ars Technica">
+
+<meta name="twitter:image:src" content="http://cdn.arstechnica.net/wp-content/uploads/2015/08/buffer-overflow-640x215.jpg">
+<meta name="twitter:image:width" content="640">
+<meta name="twitter:image:height" content="215">
+
+<meta name="twitter:creator" content="@drpizza">
+
+<meta property="og:url" content="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/">
+<meta property="og:title" content="How security flaws work: The buffer overflow">
+<meta property="og:image" content="http://cdn.arstechnica.net/wp-content/uploads/2015/08/buffer-overflow-640x215.jpg">
+<meta property="og:description" content="Starting with the 1988 Morris Worm, this flaw has bitten everyone from Linux to Windows.">
+<meta property="og:type" content="article">
+
+<script type="text/javascript">var digitalData = {"contributor":"Peter Bright","contentID":679043,"contentLength":9055,"display":"How security flaws work: The buffer overflow","pageType":"feature","keywords":{"display":"type: feature"},"canonical":"http:\/\/arstechnica.com\/security\/2015\/08\/how-security-flaws-work-the-buffer-overflow\/","pageValue":1,"publishDate":"2015-08-26T01:00:56+00:00","section":"Risk Assessment"};</script>
+  <!-- cache hit 177:single/header:405a8a380271a3bc71cf448520f701b7 --><link type="text/css" rel="stylesheet" href="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/style.css">
+
+
+  
+  <style></style><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/amzn_ads.js" async=""></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/yieldbot.js" async=""></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/11850.js" async=""></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/htw-condenast.js" async=""></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/gpt.js" async=""></script><style class="cns-ads-iframe-styles"></style><link href="http://optimized-by.rubiconproject.com/" rel="dns-prefetch"><script async="" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/pubads_impl_94.js"></script><link href="http://tpc.googlesyndication.com/safeframe/1-0-4/html/container.html" rel="prefetch"><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/satellite-579c051264746d4fa9001135.js"></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/s-code-contents-566dcf5046f148f38d0aa32bf73df40db7ae7768.js"></script><link href="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/teads-format.css" type="text/css" rel="stylesheet"></head>
+<body class="single single-post postid-679043 single-format-standard grid-view light fullwidth blog-us">
+
+  <div style="font-size: 0px; line-height: 0; overflow: hidden; height: 0px; width: 0px; padding: 0px; margin: 0px;" class="cns-ads-stage cns-ads-slot-type-out-of-page cns-ads-slot-type-out-of-page-0 cns-ads-slot-size-1x1 cns-ads-slot-state-empty" id="cns_ads_1472892103980022981778110077233__out_of_page_0_stage" data-slot-type="_out_of_page" data-name="_out_of_page_0"><div data-google-query-id="CLbVydjm8s4CFZKGjwodPiwCwg" style="font-size: 0px; line-height: 0; overflow: hidden; margin: 0px auto; box-sizing: content-box;" id="cns_ads_1472892103980022981778110077233__out_of_page_0_container" class="cns-ads-container"><div style="border: 0pt none;" id="google_ads_iframe_3379/ars.dart/int_2__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom;" marginheight="0" marginwidth="0" scrolling="no" name="google_ads_iframe_3379/ars.dart/int_2" title="3rd party ad content" id="google_ads_iframe_3379/ars.dart/int_2" frameborder="0" height="1" width="1"></iframe></div></div></div><aside class="ad ad_crown" id="ad_crown_top"><div style="font-size: 0px; line-height: 0; overflow: hidden;" class="cns-ads-stage cns-ads-slot-type-post-nav cns-ads-slot-type-post-nav-0 cns-ads-slot-size-728x90 cns-ads-slot-state-filled" id="cns_ads_147289210395905624793151567726_post_nav_0_stage" data-slot-type="post_nav" data-name="post_nav_0"><div data-google-query-id="CLTVydjm8s4CFZKGjwodPiwCwg" style="font-size: 0px; line-height: 0; overflow: hidden; margin: 0px auto; box-sizing: content-box; height: 90px; width: 728px;" data-jivox-ad-id="constellation-crown" id="cns_ads_147289210395905624793151567726_post_nav_0_container" class="cns-ads-container"><div style="border: 0pt none; height: 90px; width: 728px; min-width: 728px;" id="google_ads_iframe_3379/ars.dart/int_0__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; height: 90px; width: 728px; min-width: 728px;" marginheight="0" marginwidth="0" scrolling="no" name="google_ads_iframe_3379/ars.dart/int_0" title="3rd party ad content" id="google_ads_iframe_3379/ars.dart/int_0" frameborder="0" height="90" width="728"></iframe></div><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; visibility: hidden; display: none;" marginheight="0" marginwidth="0" scrolling="no" name="google_ads_iframe_3379/ars.dart/int_0__hidden__" title="" id="google_ads_iframe_3379/ars.dart/int_0__hidden__" frameborder="0" height="0" width="0"></iframe></div></div></aside>
+
+<div class="site-wrapper">
+  <header style="position: fixed; top: -60px; width: 1140px;" class="site-header is_stuck">
+    <div class="header-left">
+      <a href="http://arstechnica.com/" id="header-logo" title="Ars Technica Homepage">
+      <span class="icon icon-logo-ars-us"></span>
+  </a>
+      <div class="dropdown" id="header-search">
+        <a href="http://arstechnica.com/search/" class="dropdown-toggle">
+          <span class="icon icon-search-mag-glass"></span>
+        </a>
+        <div class="dropdown-content">
+          <form action="/search/" method="GET" id="search_form">
+  <input name="ie" value="UTF-8" type="hidden">
+  <input name="q" id="hdr_search_input" placeholder="Search..." tabindex="10" type="text">
+</form>
+<a class="nav-search-close">Close</a>
+        </div>
+      </div>
+      <nav id="header-nav-primary">
+        <ul>
+          
+  <li><a class="active" href="http://arstechnica.com/information-technology/">Biz &amp; IT</a></li>
+  <li><a class="" href="http://arstechnica.com/gadgets/">Tech</a></li>
+  <li><a class="" href="http://arstechnica.com/science/">Science</a></li>
+  <li><a class="" href="http://arstechnica.com/tech-policy/">Policy</a></li>
+  <li><a class="" href="http://arstechnica.com/cars/">Cars</a></li>
+  <li><a class="" href="http://arstechnica.com/gaming/">Gaming &amp; Culture</a></li>
+  <li><a href="http://arstechnica.com/civis/">Forums</a></li>        </ul>
+      </nav>
+      <div class="dropdown dropdown-mega" id="header-burger">
+        <a href="#site-footer" class="dropdown-toggle">
+          <span></span>
+        </a>
+        <div class="dropdown-content">
+          <section class="burger-navigate">
+  <h3>
+    <span class="icon icon-half-target"></span>
+    Navigate
+  </h3>
+  <ul>
+    <li><a href="http://video.arstechnica.com/">Videos</a></li>
+    <li><a href="http://arstechnica.com/features/">Features</a></li>
+    <li><a href="http://arstechnica.com/reviews/">Reviews</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="http://arstechnica.com/rss-feeds/">RSS Feeds</a></li>
+    <li><a href="http://arstechnica.com/?view=mobile">Mobile Site</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="http://arstechnica.com/about-us/">About Ars</a></li>
+    <li><a href="http://arstechnica.com/staff-directory/">Staff Directory</a></li>
+    <li><a href="http://arstechnica.com/contact-us/">Contact Us</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="http://arstechnica.com/advertise-with-us/">Advertise with Ars</a></li>
+    <li><a href="http://arstechnica.com/reprints/">Reprints</a></li>
+  </ul>
+</section>
+
+<section class="burger-filter">
+  <h3>
+    <span class="icon icon-half-mag"></span>
+    Filter by topic
+  </h3>
+  <ul id="burger-nav-primary">
+    
+  <li><a class="active" href="http://arstechnica.com/information-technology/">Biz &amp; IT</a></li>
+  <li><a class="" href="http://arstechnica.com/gadgets/">Tech</a></li>
+  <li><a class="" href="http://arstechnica.com/science/">Science</a></li>
+  <li><a class="" href="http://arstechnica.com/tech-policy/">Policy</a></li>
+  <li><a class="" href="http://arstechnica.com/cars/">Cars</a></li>
+  <li><a class="" href="http://arstechnica.com/gaming/">Gaming &amp; Culture</a></li>
+  <li><a href="http://arstechnica.com/civis/">Forums</a></li>  </ul>
+</section>
+
+<section class="burger-settings">
+  <h3>
+    <span class="icon icon-half-gear"></span>
+    Settings
+  </h3>
+  <div>
+    <div class="burger-layout">
+      
+<p>Front page layout</p>
+<div class="burger-layout-grid">
+  <a rel="nofollow" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?view=grid" class="">
+    <span class="icon icon-grid"></span><br>
+    Grid
+    <div class="faux-radio active"></div>
+      </a>
+</div>
+
+<div class="burger-layout-list">
+  <a rel="nofollow" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?view=archive" class="">
+    <span class="icon icon-list"></span><br>
+    List
+    <div class="faux-radio "></div>
+      </a>
+</div>
+
+<div class="burger-layout-unified">
+  <a rel="nofollow" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?view=unified" class="">
+    <span class="icon icon-hybrid-view"></span><br>
+    Unified
+    <div class="faux-radio "></div>
+      </a>
+</div>
+    </div>
+    <div class="burger-theme">
+      
+<p>Site theme</p>
+<div class="burger-theme-light">
+  <a rel="nofollow" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?theme=light" class="">
+    <span><span>Black on white</span></span>
+    <div class="faux-radio active"></div>
+      </a>
+</div>
+
+<div class="burger-theme-dark">
+  <a rel="nofollow" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?theme=dark" class="">
+    <span><span>White on black</span></span>
+    <div class="faux-radio "></div>
+      </a>
+</div>
+    </div>
+  </div>
+      <div class="burger-frs">
+      <div class="frs-desc">
+        <h3 class="cat-name">Feature Report Series</h3>
+        <a href="http://arstechnica.com/feature-series/specialized-databases/" class="cat-desc subheading">The Rise of Specialized Databases</a>
+      </div>
+    </div>
+  </section>
+        </div>
+      </div>
+      <div class="dropdown dropdown-mega" id="header-account">
+      <a href="http://arstechnica.com/civis/ucp.php?mode=login&amp;return_to=%2Fsecurity%2F2015%2F08%2Fhow-security-flaws-work-the-buffer-overflow%2F" class="dropdown-toggle">
+      Sign in
+      <span class="icon dropdown-indicator icon-drop-indicator"></span>
+    </a>
+    <div class="dropdown-content">
+    <section class="profile-activity">
+      <h3>
+        <span class="icon icon-half-bubble-up"></span>
+        Comment activity
+      </h3>
+              <p>Sign up or login to join the discussions!</p>
+          </section>
+
+    <section class="profile-settings">
+              <form id="login-form" action="https://arstechnica.com/civis/ucp.php?mode=login" method="post">
+  <input name="username" id="username" placeholder="Username or Email" type="text">
+  <input name="password" id="password" placeholder="Password" type="password">
+  <input value="Submit" class="button button-orange button-wide" name="login" type="submit">
+  <label id="remember-label">
+    <input name="autologin" id="autologin" type="checkbox">
+  Stay logged in</label> <span>|</span> <a href="http://arstechnica.com/civis/ucp.php?mode=sendpassword">Having trouble?</a>
+
+  <input name="redirect" value="./ucp.php?mode=login&amp;return_to=%2Fservices%2Fx%2Fa.php%3Fpath%3D%2Fsecurity%2F2015%2F08%2Fhow-security-flaws-work-the-buffer-overflow%2F%26s%3D1" type="hidden">
+  <input name="return_to" value="/services/x/a.php?path=%2Fsecurity%2F2015%2F08%2Fhow-security-flaws-work-the-buffer-overflow%2F&amp;s=1" type="hidden">
+</form>
+<div class="register-account">
+  <span>Sign up to comment and more</span>
+  <a href="http://arstechnica.com/civis/ucp.php?mode=register" class="signup-btn button button-wide">Sign up</a>
+</div>
+      
+    </section>
+  </div>
+</div>
+    </div>
+    <div class="header-right">
+            <!-- cache hit 177:header/site-toggle:2a05a4cf44df398d720c458b68ecffc5 -->
+  <div class="dropdown dropdown-right" id="header-sites">
+                        <a href="http://arstechnica.com/?return" class="dropdown-toggle">
+          <span class="icon header-flag icon-flag-us"></span>
+          <span class="icon dropdown-indicator icon-drop-indicator"></span>
+        </a>
+                                  
+    <div class="dropdown-content">
+                        <a href="http://arstechnica.co.uk/">
+            <span class="icon header-flag icon-flag-uk"></span>
+            Ars Technica UK          </a>
+          </div>
+  </div>
+          </div>
+  </header><div style="position: relative; width: 1140px; height: 40px; display: flex; vertical-align: baseline; float: none;"></div>
+
+        
+  <div class="content-wrapper">
+
+<script type="text/javascript">
+  ars.ARTICLE = {"url":"http:\/\/arstechnica.com\/security\/2015\/08\/how-security-flaws-work-the-buffer-overflow\/","short_url":"http:\/\/arstechnica.com\/?p=679043","title":"How security flaws work: The buffer overflow","author":1169,"id":679043,"topic":1291957,"pages":4,"current_page":1,"superscroll":true,"promoted":[],"single_page":false,"comments":223,"fullwidth":true,"slug":"how-security-flaws-work-the-buffer-overflow","arsStaff":{"104481":{"name":"Aaron Zimmerman","title":"Copyeditor","staff":true},"332715":{"name":"Andrew Cunningham","title":"Senior Products Editor","staff":true},"520255":{"name":"Annalee Newitz","title":"Tech Culture Editor","staff":true},"509873":{"name":"Beth Mole","title":"Health Reporter","staff":true},"335607":{"name":"Cyrus Farivar","title":"Senior Business Editor","staff":true},"329388":{"name":"Dan Goodin","title":"Security Editor","staff":true},"427993":{"name":"David Kravets","title":"Senior Editor","staff":true},"512413":{"name":"Eric Berger","title":"Senior Space Editor","staff":true},"55943":{"name":"Jacqui Cheng","title":"Editor at Large","staff":false},"439519":{"name":"Jennifer Hahn","title":"Video Producer\/Editor","staff":true},"334677":{"name":"Joe Mullin","title":"Tech Policy Editor","staff":true},"52979":{"name":"John Timmer","title":"Senior Science Editor","staff":true},"312082":{"name":"Jon Brodkin","title":"Senior IT Reporter","staff":true},"14317":{"name":"Jonathan M. Gitlin","title":"Automotive Editor","staff":true},"338374":{"name":"Kathleen DeVries","title":"","staff":false},"522745":{"name":"Kelly Fiveash","title":"News Editor","staff":true},"440179":{"name":"Kerry Staurseth","title":"Associate Copyeditor","staff":true},"328283":{"name":"Kyle Orland","title":"Senior Gaming Editor","staff":true},"483933":{"name":"Mark Walton","title":"Consumer Editor","staff":true},"331051":{"name":"Megan Geuss","title":"Staff editor","staff":true},"182268":{"name":"Nate Anderson","title":"Deputy Editor","staff":true},"1169":{"name":"Peter Bright","title":"Technology Editor","staff":true},"391727":{"name":"Ron Amadeo","title":"Reviews Editor","staff":true},"348927":{"name":"Sam Machkovech","title":"Culture Reporter","staff":true},"314884":{"name":"Sean Gallagher","title":"IT Editor","staff":true},"466481":{"name":"Sebastian Anthony","title":"Editor of Ars Technica UK","staff":true},"505571":{"name":"Valentina Palladino","title":"Associate Reviewer","staff":true},"369205":{"name":"Akshat Rathi","title":"Associate Writer","staff":false},"325040":{"name":"Allie Wilkinson","title":"","staff":false},"505703":{"name":"Cassandra Khaw","title":"Contributing Reporter ","staff":true},"453791":{"name":"Cathleen O'Grady","title":"Contributing science reporter","staff":true},"102179":{"name":"Chris Lee","title":"Associate writer","staff":true},"332078":{"name":"Curt Hopkins","title":"Associate Writer","staff":false},"6978":{"name":"Dave Girard","title":"Associate Writer","staff":false},"332434":{"name":"Dave Klingler","title":"Associate Writer","staff":false},"129513":{"name":"David Kanter","title":"","staff":false},"254631":{"name":"Diana Gitig","title":"Associate Writer","staff":false},"52335":{"name":"edgar","title":"","staff":false},"172426":{"name":"egosumliber","title":"","staff":false},"480857":{"name":"Glyn Moody","title":"Contributing Policy Editor","staff":true},"46707":{"name":"Iljitsch van Beijnum","title":"Associate Writer","staff":true},"332336":{"name":"James Holloway","title":"Associate Writer","staff":false},"217531":{"name":"Jeremy Jacquot","title":"","staff":false},"15365":{"name":"Jeremy Reimer","title":"Senior Niche Technology Historian","staff":false},"8996":{"name":"John Siracusa","title":"Associate writer","staff":false},"375641":{"name":"Kate Prengaman","title":"","staff":false},"251816":{"name":"Kate Shaw Yoshida","title":"Associate Writer","staff":false},"133411":{"name":"Knadles","title":"","staff":false},"37509":{"name":"Matt Ford","title":"Associate writer","staff":false},"300066":{"name":"Matthew Braga","title":"Associate writer","staff":true},"323078":{"name":"Matthew Francis","title":"Associate Writer","staff":false},"173191":{"name":"Matthew Lasar","title":"Associate writer","staff":true},"336278":{"name":"Melissae Fellet","title":"Associate Writer","staff":false},"1991":{"name":"Ohrmazd","title":"","staff":false},"445261":{"name":"Robert Lemos","title":"","staff":false},"66380":{"name":"Ryan Paul","title":"Ars Editor Emeritus ","staff":false},"17480":{"name":"SBD","title":"","staff":false},"294205":{"name":"Scott K. Johnson","title":"Associate Writer","staff":true},"451673":{"name":"Shalini Saxena","title":"Science Writer","staff":false},"163185":{"name":"Tim De Chant","title":"","staff":false},"173910":{"name":"Tim Lee","title":"","staff":false},"181333":{"name":"vansau","title":"","staff":false},"445789":{"name":"Xaq Rzetelny","title":"","staff":false},"6021":{"name":"Yaz","title":"","staff":false},"417641":{"name":"Yogi Patel","title":"","staff":false},"513703":{"name":"Forrest Marvez","title":"Web Developer","staff":false},"316010":{"name":"Jason Marlin","title":"Technical Director","staff":true},"998":{"name":"Ken Fisher","title":"Editor in Chief","staff":true},"1002":{"name":"Aurich Lawson","title":"Creative Director","staff":true},"25862":{"name":"Eric Bangeman","title":"Managing Editor","staff":true},"10243":{"name":"Lee Hutchinson","title":"Senior Technology Editor","staff":true},"330533":{"name":"Nathan Mattise","title":"Features Editor","staff":true},"495539":{"name":"S.I. Newhouse","title":"","staff":true},"547195":{"name":"Tom Mendelsohn","title":"Contributing Sub Editor","staff":true},"513593":{"name":"Andrii Degeler","title":"Contributing reporter","staff":true},"549735":{"name":"Jennifer Baker","title":"Contributing Europe Correspondent","staff":true},"100955":{"name":"Lee Aylward","title":"Lead Developer","staff":false}}};
+</script>
+
+<article itemscope="" itemtype="http://schema.org/NewsArticle" class="article-single standalone intro-default ">
+
+  <div data-page="1" class="column-wrapper">
+
+    <div class="left-column">
+      <header class="article-header">
+        <h4 class="post-upperdek">
+      Risk Assessment    —
+</h4>
+        <h1 itemprop="headline">How security flaws work: The buffer overflow</h1>
+        <h2 itemprop="description">Starting with the 1988 Morris Worm, this flaw has bitten everyone from Linux to Windows.</h2>
+        <section class="post-meta">
+
+  
+  <p class="byline" itemprop="author creator" itemscope="" itemtype="http://schema.org/Person">
+      <a itemprop="url" href="http://arstechnica.com/author/peter-bright/" rel="author"><span itemprop="name">Peter Bright</span></a>
+      -  <time class="date" data-time="1440550856" datetime="2015-08-26T01:00:56+00:00">8/26/2015, 6:30 AM</time>
+  </p>
+
+
+  
+</section>      </header>
+
+      <section class="article-guts">
+        <div itemprop="articleBody" class="article-content post-page">
+          
+<figure class="intro-image intro-left">
+  <img src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/buffer-overflow.jpg">
+      <figcaption class="caption"><div class="caption-credit">Aurich Lawson / Thinkstock</div></figcaption>  </figure>
+
+
+
+
+<!-- cache hit 177:single/related:405a8a380271a3bc71cf448520f701b7 --><!-- empty -->
+<aside id="social-left"><a title="91 posters participating, including story author." class="comment-count icon-comment-bubble-down" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?comments=1">
+      <span class="comment-count-before">reader comments</span>
+    <span class="comment-count-number">223</span>
+  </a>  
+
+<div class="share-links">
+  <span>Share this story</span>
+  <a href="https://www.facebook.com/sharer.php?u=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043" target="_blank" class="social-icon share-facebook" title="Share on Facebook"></a>
+  <a href="https://twitter.com/share?text=How+security+flaws+work%3A+The+buffer+overflow&amp;url=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043" target="_blank" class="social-icon share-twitter" title="Share on Twitter"></a>
+  <a href="https://www.reddit.com/submit?url=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043&amp;title=How+security+flaws+work%3A+The+buffer+overflow" target="_blank" class="social-icon share-reddit" title="Share on Reddit"></a>
+  <a href="https://plus.google.com/share?url=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043" target="_blank" class="social-icon share-gplus" title="Share on Google+"></a>
+</div>
+</aside><p>The buffer overflow has long been a feature of the computer 
+security landscape. In fact the first self-propagating Internet 
+worm—1988's Morris Worm—used a buffer overflow in the Unix <code>finger</code>
+ daemon to spread from machine to machine. Twenty-seven&nbsp;years 
+later, buffer overflows remain a source of problems. Windows infamously 
+revamped its security focus after two buffer overflow-driven 
+exploits&nbsp;in the early 2000s. And&nbsp;<a href="http://arstechnica.com/security/2015/05/90s-style-security-flaw-puts-millions-of-routers-at-risk/">just this May</a>, a buffer overflow found in a Linux driver left (potentially) millions of home and small office routers vulnerable to attack.</p>
+<p>At its core, the buffer overflow is an astonishingly simple bug that 
+results from a common practice. Computer programs frequently operate on 
+chunks of data that are read from a file, from the network, or even from
+ the keyboard. Programs allocate finite-sized blocks of 
+memory—buffers—to store this data as they work on it. A buffer overflow 
+happens when more data is written to or read from a buffer than the 
+buffer can hold.</p>
+<p>On the face of it, this sounds like a pretty foolish error. After 
+all, the program knows how big the buffer is, so it should be 
+simple&nbsp;to make sure that the program never tries to cram&nbsp;more 
+into the buffer than it knows will fit. You'd be right to think 
+that.&nbsp;Yet buffer overflows continue to&nbsp;happen, and the results
+ are frequently a security catastrophe.</p>
+<p></p><aside class="manual-ad right"><div id="xrailTop300x251_frame"></div></aside><script type="text/javascript">ars.AD.queue.push(["xrailTop", {sz:"300x251", kws:["bottom"], collapse: true}]);</script>To
+ understand why buffer overflows&nbsp;happen—and why their impact is so 
+grave—we need to understand a little about how programs use memory and a
+ little&nbsp;more about how programmers write their code.&nbsp;(Note 
+that we'll&nbsp;look primarily at the stack buffer overflow. It's 
+not&nbsp;the only kind of overflow issue, but it's the classic, 
+best-known kind.)<p></p>
+<h2>Stack it up</h2>
+<p>Buffer overflows create problems only for native code—that is, 
+programs which&nbsp;use the processor's instruction set directly rather 
+than through some intermediate form such as in Java or Python. The 
+overflows are tied to the way the processor and native code programs 
+manipulate memory. Different operating systems have their own quirks, 
+but every platform in common use today follows essentially the same 
+pattern. To understand how these attacks work and some of the things 
+people do to try to stop them, we first have to understand a little 
+about how that memory is used.</p>
+<p>The most important central concept is the memory address. Every 
+individual byte of memory has a corresponding numeric address. When the 
+processor loads and stores data from main memory (RAM), it uses the 
+memory address of the location it wants to read and write from. System 
+memory isn't just used for data; it's also used for the executable code 
+that makes up our software. This means that every function of a running 
+program also has an address.</p>
+<p>In the early days of computing, processors and operating systems used
+ physical memory addresses: each memory address corresponded directly to
+ a particular piece of RAM. While some pieces of modern operating 
+systems still have to use these physical memory addresses, all of 
+today's operating systems use a scheme called virtual memory.</p>
+<p>With virtual memory, the direct correspondence between a memory 
+address and a physical location in RAM is broken. Instead, software and 
+the processor operate using virtual memory addresses. The operating 
+system and processor together maintain a mapping between virtual memory 
+addresses and physical memory addresses.</p>
+<p>This virtualization enables a range of important features. The first and foremost is <em>protected memory</em>. Every individual process gets its <em>own</em>
+ set of addresses. For a 32-bit process, those addresses start at zero 
+(for the first byte) and run up to 4,294,967,295 (or in hexadecimal, <code>0xffff'ffff</code>; 2<sup>32</sup> - 1). For a 64-bit process, they run all the way up to 18,446,744,073,709,551,615 (<code>0xffff'ffff'ffff'ffff</code>, 2<sup>64</sup> - 1). So, every process has its own address <code>0</code>, its own address <code>1</code>, its own address <code>2</code>, and so on and so forth.</p>
+<p>(For the remainder of this article, I'm going to stick to talking 
+about 32-bit systems, except where otherwise noted. 32- and 64-bit 
+systems work in essentially the same ways, so everything translates well
+ enough; it's just a little clearer to stick to one bitness.)</p>
+<p>Because each process gets its own set of addresses, these scheme in a
+ very straightforward way to prevent one process from damaging the 
+memory of any other: all the addresses that a process can use reference 
+memory belonging only to that process. It's also much easier for the 
+processes to deal with; physical memory addresses, while they broadly 
+work in the same way (they're just numbers that start at zero), tend to 
+have wrinkles that make them annoying to use. For example, they're 
+usually not contiguous; address <code>0x1ff8'0000</code> is used for the
+ processor's System Management Mode memory; a small chunk of physical 
+memory that's off limits to normal software. Memory from PCIe cards also
+ generally occupies some of this address space. Virtual addresses have 
+none of these inconveniences.</p>
+<p>So what does a process have in its address space? Broadly speaking, 
+there are four common things, of which three interest us. The 
+uninteresting one is, in most operating systems, "the operating system 
+kernel." For performance reasons, the address space is normally split 
+into two halves, with the bottom half being used by the program and the 
+top half being the kernel's address space. The kernel-half of the memory
+ is inaccessible to the program's half, but the kernel itself can read 
+the program's memory. This is one of the ways that data is passed to 
+kernel functions.</p>
+<p>The first things that we need to care about are the executables and 
+libraries that constitute the program. The main executable and all its 
+libraries are all loaded into the process'&nbsp;address space, and all 
+of their constituent functions accordingly have memory addresses.</p>
+<p>The second is the memory that the program uses for storing the data 
+it's working on, generally called the heap. This might be used, for 
+example, to store the document currently being edited, the webpage (and 
+all its JavaScript objects, CSS, and so on) being viewed, or the map for
+ the game being played.</p>
+<p>The third and most important is the call stack, generally just called
+ the stack. This is the most complex aspect. Every thread in a process 
+has its own stack. It's a chunk of memory that's used to keep track of 
+both the function that a thread is currently running, as well as all the
+ predecessor functions—the ones that were called to get to the current 
+function. For example, if function <code>a</code> calls function <code>b</code>, and function <code>b</code> calls function <code>c,</code> then the stack will contain information about <code>a</code>, <code>b</code>, and <code>c</code>, in that order.</p>
+<figure class="image shortcode-img right medium" style="width:300px"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack.png" class="enlarge" data-height="1837" data-width="1080" alt="Here we see the basic layout of our stack with a 64 character buffer called &lt;code&gt;name&lt;/code&gt;, then the frame pointer, and then the return address. &lt;code&gt;esp&lt;/code&gt; has the address of the top of the stack, &lt;code&gt;ebp&lt;/code&gt; has the address of the frame pointer."><img alt="Here we see the basic layout of our stack with a 64 character buffer called &lt;code&gt;name&lt;/code&gt;, then the frame pointer, and then the return address. &lt;code&gt;esp&lt;/code&gt; has the address of the top of the stack, &lt;code&gt;ebp&lt;/code&gt; has the address of the frame pointer." src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/basic-stack-300x510.png" srcset="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack-640x1089.png 2x" height="510" width="300"></a><figcaption class="caption"><div class="caption-text"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack.png" class="enlarge-link" data-height="1837" data-width="1080">Enlarge</a> <span class="sep">/</span> Here we see the basic layout of our stack with a 64 character buffer called <code>name</code>, then the frame pointer, and then the return address. <code>esp</code> has the address of the top of the stack, <code>ebp</code> has the address of the frame pointer.</div></figcaption></figure>
+<p>The call stack is a specialized version of the more general "stack" 
+data structure. Stacks are variable-sized structures for storing 
+objects. New objects can be added ("pushed") to one end of the stack 
+(conventionally known as the "top" of the stack), and objects can be 
+removed ("popped") from the stack. Only the top of the stack can be 
+modified with a push or a pop, so the stack forces a kind of sequential 
+ordering: the most recently pushed item is the one that gets popped 
+first. The first item that gets pushed on the stack is the last one that
+ gets popped.</p>
+<p>The most important&nbsp;thing that the call stack does is to store <em>return addresses</em>.
+ Most of the time, when a program calls a function, that function does 
+whatever it is supposed to do (including calling other functions), and 
+then returns to the function that called it. To go back to the calling 
+function, there must be a record of what that calling function was: 
+execution should resume from the instruction <em>after</em> the function
+ call instruction. The address of this instruction is called the return 
+address. The stack is used to maintain these return addresses: whenever a
+ function is called, the return address is pushed onto the stack. 
+Whenever a function returns, the return address is popped off the stack,
+ and the processor begins executing the instruction at that address.</p>
+<p>This stack functionality is so fundamentally important that most, if 
+not all, processors include built-in support for these concepts. 
+Consider x86 processors. Among the registers (small storage locations in
+ the processor that can be directly accessed by processor instructions) 
+that x86 defines, the two that are most important are <code>eip</code>, standing for "instruction pointer," and <code>esp</code>, standing for stack pointer.</p>
+<p><code>esp</code> always contains the address of the top of the stack. Each time something is pushed onto the stack, the value in <code>esp</code> is decreased. Each time something is popped from the stack, the value of <code>esp</code> is increased. This means that the stack grows "down;" as more things are pushed onto the stack, the address stored in <code>esp</code> gets lower and lower. In spite of this, the memory location referenced by <code>esp</code> is still called the "top" of the stack.</p>
+<p><code>eip</code> gives the address of the currently executing instruction. The processor maintains <code>eip</code> itself. It reads the instruction stream from memory and increments <code>eip</code> accordingly so that it always has the instruction's address. x86 has an instruction for function calls, named <code>call</code>, and another one for returning from a function, named <code>ret</code>.</p>
+<p><code>call</code> takes one operand; the address of the function to 
+call (though there are several different ways that this can be 
+provided). When a <code>call</code> is executed, the stack pointer <code>esp</code> is decremented by 4 bytes (32-bits), and the address of the instruction following the <code>call</code>, the return address, is written to the memory location now referenced by <code>esp</code>—in other words, the return address is pushed onto the stack. <code>eip</code> is then set to the address specified as operand to <code>call</code>, and execution continues from that address.</p>
+<p><code>ret</code> does the opposite. The simple <code>ret</code> doesn't take any operands. The processor first reads the value from the memory address contained in <code>esp</code>, then increments <code>esp</code> by 4 bytes—it pops the return address from the stack. <code>eip</code> is set to this value, and execution continues from that address.</p>
+<figure class="video"><div class="wrapper" style="padding-bottom: 56.326530612245%;"><div style="height:552px; width:980px"><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/5511d76261646d5566020000.js" class="x-skip cne-dirty"></script><div class="cne-player-container" id="bada284c-77a1-1a1b-d441-deae84ededdb" style="position:relative;padding-bottom:56.25%;height:0;box-sizing:content-box;">
+  <iframe style="position:absolute;top:0;left:0;width:1px !important;height:1px !important;min-width:100%;min-height:100%;" allowfullscreen="" webkitallowfullscreen="" mozallowfullscreen="" msallowfullscreen="" allowtransparency="true" scrolling="no" frameborder="0"></iframe>
+</div></div></div><figcaption class="caption"><div class="caption-text">See <code>call</code> and <code>ret</code> in action.</div></figcaption></figure>
+<p>If the call stack <em>only</em> contained a sequence of return 
+addresses, there wouldn't be much scope for problems. The real problem 
+comes with everything else that goes on the stack, too. The stack 
+happens to be a quick and efficient place for storing data. Storing data
+ on the heap is relatively complex; the program needs to keep track of 
+how much space is available on the heap, how much space each piece of 
+data is using, and various other bits of bookkeeping. But the stack is 
+also&nbsp;simple; to make space for some data, just decrement the stack 
+pointer. To tidy up when the data is no longer needed, increment the 
+stack pointer.</p>
+<p>This convenience makes the stack a logical place to store the 
+variables that belong to a function. A function has a 256 byte buffer to
+ read some user input? Easy, just subtract 256 from the stack pointer 
+and you've&nbsp;created the buffer. At the end of the function, just add
+ 256 back onto the stack pointer, and the buffer is discarded.</p>
+<figure class="image shortcode-img right medium" style="width:300px"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack-normal-usage.png" class="enlarge" data-height="1837" data-width="1080" alt="When we use the program correctly, the keyboard input is stored in the &lt;code&gt;name&lt;/code&gt; buffer, followed by a null (zero) byte. The frame pointer and return address are unaltered."><img alt="When we use the program correctly, the keyboard input is stored in the &lt;code&gt;name&lt;/code&gt; buffer, followed by a null (zero) byte. The frame pointer and return address are unaltered." src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/basic-stack-normal-usage-300x510.png" srcset="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack-normal-usage-640x1089.png 2x" height="510" width="300"></a><figcaption class="caption"><div class="caption-text"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack-normal-usage.png" class="enlarge-link" data-height="1837" data-width="1080">Enlarge</a> <span class="sep">/</span> When we use the program correctly, the keyboard input is stored in the <code>name</code> buffer, followed by a null (zero) byte. The frame pointer and return address are unaltered.</div></figcaption></figure>
+<p>There are limitations to this. The stack isn't a good place to store 
+very large objects; the total amount of memory available is usually 
+fixed when a thread is created, and that's typically around 1MB in size.
+ These large objects <em>must</em> be placed on the heap instead. The 
+stack also isn't usable for objects that need to exist for longer than 
+the span of a single function call. Because every stack allocation is 
+undone when a function exits, any objects that exist on the stack can 
+only live as long as a function is running. Objects on the heap, 
+however, have no such restriction; they can hang around forever.</p>
+<p>This stack storage isn't just used for the named variables that 
+programmers explicitly create in their programs; it can also be used for
+ storing whatever other values the program may need to store. This is 
+traditionally a particularly acute concern on x86. x86 processors don't 
+have very many registers (there are only 8 integer registers in total, 
+and some of those, like <code>eip</code> and <code>esp,</code> already 
+have special purposes), and so functions can rarely keep all the values 
+they need in registers. To free up space in a register while still 
+ensuring that its current value can be retrieved later, the compiler 
+will push the value of the register onto the stack. The value can then 
+be popped later to put it back into a register. In compiler jargon, this
+ process of saving registers so that they can be re-used is called <em>spilling</em>.</p>
+<p>Finally, the stack is often used to pass arguments to functions. The 
+calling function pushes each argument in turn onto the stack; the called
+ function can then pop the arguments off. This isn't the only way of 
+passing arguments—they can be passed in registers too, for example—but 
+it's one of the most flexible.</p>
+<p>The set of things that a function has on the stack—its local 
+variables, its spilled registers, and any arguments it's preparing to 
+pass to another function—is called a "stack frame." Because data within 
+the stack frame is used so extensively, it's useful to have a way of 
+quickly referencing it.</p>
+<p>The stack pointer <em>can</em> do this, but it's somewhat awkward: 
+the stack pointer always points to the top of the stack, and so it moves
+ around as things are pushed and popped. For example, a variable may 
+start out with an address of at <code>esp + 4</code>. Two more values might be pushed onto the stack, meaning that the variable now has to be accessed at <code>esp + 12</code>. One of those values can then get popped off, so the variable is now at <code>esp + 8</code>.</p>
+<p>This isn't an insurmountable difficulty, and compilers can easily 
+handle the challenge. Still, it can make using the stack pointer to 
+access anything other than "the top of the stack" awkward, especially 
+for the hand-coded assembler.</p>
+<p>To make things easier, it's common to maintain a second pointer, one that consistently stores the address of the <em>bottom</em> (start) of each stack frame—a value known as the <em>frame pointer</em>—and on x86, there's even a register that's generally used to store this value, <code>ebp</code>.
+ Since this never changes within a given function, this provides a 
+consistent way to access a function's variables: a value that's at <code>ebp - 4</code> will remain at <code>ebp - 4</code>
+ for the whole of a function. This isn't just useful for humans; it also
+ makes it easier for debuggers to figure out what's going on.</p>
+<figure class="image shortcode-img full-width" style="width:980px"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/visual-studio.png" class="enlarge" data-height="600" data-width="1734" alt="This screenshot from Visual Studio shows some of this in action for a simple x86 program. On x86 processors, the register named &lt;code&gt;esp&lt;/code&gt; contains the address of the top stack, in this case &lt;code&gt;0x0019fee0&lt;/code&gt;, highlighted in blue (on x86, the stack actually grows downwards, toward memory address &lt;code&gt;0&lt;/code&gt;, but it's still called the top of the stack anyway). This function only has one stack variable, &lt;code&gt;name&lt;/code&gt;, highlighted in pink. It's a fixed size 32-byte buffer. Because it's the only variable, its address is also &lt;code&gt;0x0019fee0&lt;/code&gt;, the same as the top of the stack.&lt;/p&gt;
+&lt;p&gt;x86 also has a register called &lt;code&gt;ebp&lt;/code&gt;, highlighted in red, that's (normally) dedicated to storing the location of the frame pointer. The frame pointer is placed immediately after the stack variables. Right after the frame pointer is the return address, highlighted in green. The return address references a code fragment with address &lt;code&gt;0x00401048&lt;/code&gt;. This instruction comes immediately after a &lt;code&gt;call&lt;/code&gt; instruction, making clear the way the return address is used to resume execution from where the calling function left off."><img alt="This screenshot from Visual Studio shows some of this in action for a simple x86 program. On x86 processors, the register named &lt;code&gt;esp&lt;/code&gt; contains the address of the top stack, in this case &lt;code&gt;0x0019fee0&lt;/code&gt;, highlighted in blue (on x86, the stack actually grows downwards, toward memory address &lt;code&gt;0&lt;/code&gt;, but it's still called the top of the stack anyway). This function only has one stack variable, &lt;code&gt;name&lt;/code&gt;, highlighted in pink. It's a fixed size 32-byte buffer. Because it's the only variable, its address is also &lt;code&gt;0x0019fee0&lt;/code&gt;, the same as the top of the stack.&lt;/p&gt;
+&lt;p&gt;x86 also has a register called &lt;code&gt;ebp&lt;/code&gt;, highlighted in red, that's (normally) dedicated to storing the location of the frame pointer. The frame pointer is placed immediately after the stack variables. Right after the frame pointer is the return address, highlighted in green. The return address references a code fragment with address &lt;code&gt;0x00401048&lt;/code&gt;. This instruction comes immediately after a &lt;code&gt;call&lt;/code&gt; instruction, making clear the way the return address is used to resume execution from where the calling function left off." src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/visual-studio-980x339.png" height="339" width="980"></a><figcaption class="caption"><div class="caption-text"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/visual-studio.png" class="enlarge-link" data-height="600" data-width="1734">Enlarge</a> <span class="sep">/</span>
+ This screenshot from Visual Studio shows some of this in action for a 
+simple x86 program. On x86 processors, the register named <code>esp</code> contains the address of the top stack, in this case <code>0x0019fee0</code>, highlighted in blue (on x86, the stack actually grows downwards, toward memory address <code>0</code>, but it's still called the top of the stack anyway). This function only has one stack variable, <code>name</code>, highlighted in pink. It's a fixed size 32-byte buffer. Because it's the only variable, its address is also <code>0x0019fee0</code>, the same as the top of the stack.<p></p>
+<p>x86 also has a register called <code>ebp</code>, highlighted in red, 
+that's (normally) dedicated to storing the location of the frame 
+pointer. The frame pointer is placed immediately after the stack 
+variables. Right after the frame pointer is the return address, 
+highlighted in green. The return address references a code fragment with
+ address <code>0x00401048</code>. This instruction comes immediately after a <code>call</code> instruction, making clear the way the return address is used to resume execution from where the calling function left off.</p></div></figcaption></figure>
+<figure class="image shortcode-img right medium" style="width:300px"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack-overflow-a.png" class="enlarge" data-height="1989" data-width="1080" alt="&lt;/p&gt;
+&lt;p&gt;Unfortunately &lt;code&gt;gets()&lt;/code&gt; is a really stupid function. If we just hold down A on the keyboard it won't stop once it's filled the &lt;code&gt;name&lt;/code&gt; buffer. It'll just keep on writing data to memory, overwriting the frame pointer, the return address, and anything and everything else it can."><img alt="&lt;/p&gt;
+&lt;p&gt;Unfortunately &lt;code&gt;gets()&lt;/code&gt; is a really stupid function. If we just hold down A on the keyboard it won't stop once it's filled the &lt;code&gt;name&lt;/code&gt; buffer. It'll just keep on writing data to memory, overwriting the frame pointer, the return address, and anything and everything else it can." src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/basic-stack-overflow-a-300x553.png" srcset="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack-overflow-a-640x1179.png 2x" height="553" width="300"></a><figcaption class="caption"><div class="caption-text"><a href="http://cdn.arstechnica.net/wp-content/uploads/2015/08/basic-stack-overflow-a.png" class="enlarge-link" data-height="1989" data-width="1080">Enlarge</a> <span class="sep">/</span> <p></p>
+<p>Unfortunately <code>gets()</code> is a really stupid function. If we just hold down A on the keyboard it won't stop once it's filled the <code>name</code>
+ buffer. It'll just keep on writing data to memory, overwriting the 
+frame pointer, the return address, and anything and everything else it 
+can.</p></div></figcaption></figure>
+<p><code>name</code>&nbsp;in the above screenshot is the kind of buffer 
+that's regularly overflowed. Its size is fixed at exactly 64 characters.
+ In this case it's filled with a bunch of numbers, and it ends in a 
+final null. As should be clear from the above picture, if more than 64 
+bytes are written into the <code>name</code> buffer, then other values 
+on the stack will be damaged. If four extra bytes are written, the frame
+ pointer will be&nbsp;destroyed. If <em>eight</em> extra bytes are written, both the frame pointer and the return address get overwritten.</p>
+<p>Clearly this will lead to damaging the program's data, but the 
+problem of buffer flows is more serious: they often lead to code 
+execution. This happens because those overflowed buffers won't just 
+overwrite data. They can also overwrite the other important thing kept 
+on the stack—those return addresses. The return address controls which 
+instructions the processor will execute when it's finished with the 
+current function; it's meant to be some location within the calling 
+function, but if it gets overwritten in a buffer overflow, it could 
+point anywhere. If attackers can control the buffer overflow, they can 
+control the return address; if they can control the return address, they
+ can choose what code the processor executes next.</p>
+<p>The process probably won't have some nice, convenient "compromise the
+ machine" function for the attacker to run, but that doesn't really 
+matter. The same buffer that was used to overwrite the return address 
+can also be used to hold a short snippet of executable code, called 
+shellcode, that will in turn download a malicious executable, or open up
+ a network connection, or do whatever else the attacker fancies.</p>
+<p>Traditionally, this was trivial to do because of a trait that may 
+seem a little surprising: generally, each program would use the same 
+memory addresses each time you ran it, even if you rebooted in between. 
+This means that the location of the buffer on the stack would be the 
+same each time, and so the value used to overwrite the return address 
+could&nbsp;be the same each time. An attacker only had&nbsp;to figure 
+out what the address was once, and the attack would work on <em>any</em> computer running the flawed code.</p>
+
+        </div>
+
+        
+                  <nav class="page-numbers">Page: <span class="numbers">1 <a href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/2/">2</a> <a href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/3/">3</a> <a href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/4/">4</a> <a href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/2/"><span class="next">Next <span class="arrow">→</span></span></a></span></nav>
+        
+      </section>
+
+    </div>
+
+    <div class="xrail">
+      <div style="position: fixed; top: 20px; width: 300px;" class="xrail-content is_stuck">
+        
+        
+                  <aside class="ad ad_xrail ad_xrail_top" id="ad_xrail_top"><div style="font-size: 0px; line-height: 0; overflow: hidden;" class="cns-ads-stage cns-ads-slot-type-siderail cns-ads-slot-type-siderail-0 cns-ads-slot-state-filled cns-ads-slot-size-300x250" id="cns_ads_147289210397004076647286440248_siderail_0_stage" data-slot-type="siderail" data-name="siderail_0"><div data-google-query-id="CKKT1u7m8s4CFUoUjwod_DMD6w" style="font-size: 0px; line-height: 0; overflow: hidden; margin: 0px auto; box-sizing: content-box; height: 250px; width: 300px;" id="cns_ads_147289210397004076647286440248_siderail_0_container" class="cns-ads-container"><div style="border: 0pt none; height: 250px; width: 300px; min-width: 300px;" id="google_ads_iframe_3379/ars.dart/int_1__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; height: 250px; width: 300px; min-width: 300px;" marginheight="0" marginwidth="0" scrolling="no" name="google_ads_iframe_3379/ars.dart/int_1" title="3rd party ad content" id="google_ads_iframe_3379/ars.dart/int_1" frameborder="0" height="250" width="300"></iframe></div><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; visibility: hidden; display: none;" marginheight="0" marginwidth="0" scrolling="no" name="google_ads_iframe_3379/ars.dart/int_1__hidden__" title="" id="google_ads_iframe_3379/ars.dart/int_1__hidden__" frameborder="0" height="0" width="0"></iframe></div></div></aside>
+              </div>
+    </div>
+
+  </div><div class="superscroll-placeholder" data-page="1"></div>
+
+  <div class="column-wrapper">
+    <div class="left-column">
+              <!-- cache hit 177:single/author:4eee1d593608e5f8c2ba62b0bc4884dc --><section class="article-author">
+      <a style="background-image:url('http://cdn.arstechnica.net/wp-content/uploads/2016/05/p.bright-14.jpg');" class="author-photo" href="http://arstechnica.com/author/peter-bright"></a>
+  
+  <div class="author-bio">
+    <section class="author-bio-top">
+      <a href="http://arstechnica.com/author/peter-bright" class="author-name">Peter Bright</a>
+      Peter is Technology Editor at Ars. He covers Microsoft, 
+programming and software development, Web technology and browsers, and 
+security. He is based in Brooklyn, NY.    </section>
+    <section class="author-social">
+              <strong>Email</strong> <a href="mailto:peter.bright@arstechnica.com">peter.bright@arstechnica.com</a>
+                    <span class="slashes">//</span>
+                    <strong>Twitter</strong> <a href="https://www.twitter.com/drpizza" target="_blank">@drpizza</a>
+          </section>
+    
+  </div>
+
+</section>
+      
+      <aside id="social-footer">
+        <a title="91 posters participating, including story author." class="comment-count icon-comment-bubble-down" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?comments=1">
+      <span class="comment-count-before">reader comments</span>
+    <span class="comment-count-number">223</span>
+  </a>  
+
+<div class="share-links">
+  <span>Share this story</span>
+  <a href="https://www.facebook.com/sharer.php?u=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043" target="_blank" class="social-icon share-facebook" title="Share on Facebook"></a>
+  <a href="https://twitter.com/share?text=How+security+flaws+work%3A+The+buffer+overflow&amp;url=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043" target="_blank" class="social-icon share-twitter" title="Share on Twitter"></a>
+  <a href="https://www.reddit.com/submit?url=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043&amp;title=How+security+flaws+work%3A+The+buffer+overflow" target="_blank" class="social-icon share-reddit" title="Share on Reddit"></a>
+  <a href="https://plus.google.com/share?url=http%3A%2F%2Farstechnica.com%2F%3Fpost_type%3Dpost%26p%3D679043" target="_blank" class="social-icon share-gplus" title="Share on Google+"></a>
+</div>
+      </aside>
+    </div>
+    <div class="xrail">
+    </div>
+  </div>
+
+
+  <div id="article-footer-wrap">
+          <div class="row comments-row">
+  <section id="comments-area">
+    <a name="comments-bar"></a>
+          <div id="comments-container"></div>
+      <div id="comments-posting-container" class="thick-divide-bottom">
+        <p id="reply">You must <a href="http://arstechnica.com/civis/ucp.php?mode=login&amp;return_to/security/2015/08/how-security-flaws-work-the-buffer-overflow/" class="vote_login">login or create an account</a> to comment.</p>
+      </div>
+      <section>
+</section></section></div>
+      <div class="prev-next-links">
+  <a href="http://arstechnica.com/tech-policy/2015/08/tech-food-startup-cant-use-the-word-mayo-in-its-eggless-just-mayo/" rel="prev"><span class="arrow">←</span> Previous story</a>  <a href="http://arstechnica.com/tech-policy/2015/08/cops-decide-to-collect-less-license-plate-data-after-80gb-drive-got-full/" rel="next">Next story <span class="arrow">→</span></a></div>      <footer id="article-footer">
+  <div id="recommendations-footer">
+    <aside id="story-recommendations">
+  <div class="heading-column">
+    <h3>Related Stories</h3>
+  </div>
+  <div id="story-recs" class="rec-wrap"></div>
+</aside>
+        <aside id="sponsored-recommendations">
+  <div class="heading-column">
+    <h3>Sponsored Stories</h3>
+    <a href="http://www.outbrain.com/what-is/default/en" target="_blank">Powered by <span class="icon outbrain-logo icon-logo-outbrain"></span></a>
+  </div>
+  <div id="outbrain-recs">
+  <div class="outbrain-recommendation"><a href="https://ad.doubleclick.net/ddm/trackclk/N377401.1984505OUTBRAIN/B10099092.135641910;dc_trk_aid=308165408;dc_trk_cid=72823483;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=" data-ob-url="http://paid.outbrain.com/network/redir?p=4AnKROQpNzYVF2Jpuk8E8Dh5ETwf0HSBi1iYRCXotcgF3X5cn3hVHIRs9Q_hyH2Bjpem4bzRhYOfHLPRXj7euhPZ1w2ziDZMElHevH6I-vveAS9gKbbgiIksYWa8SQYhdHjjr8bnRru0Mr7txdEzqIrhAxcq6zQGxjYH2QjcUbzVvDHoNRZukS19SkMArmmDLy3qfMLYe3uH2_Jw58dJXeGESxJZMReL83qQSEqV7Oai_0QfPFPqvVmeMm37w8_T6k_4WmwXzAJaK0qe4Cz8M2H65LY868q8CetTlru7Fv00LjRRAPaD8Zzg8agjf2BbcYi1ERyvfjhzDsUySMsREjOnlgzLdjcY7DXr49WfMNubohbCs__lhRjLIhfTFa8NX-EefFEgNXHtOrfMA8-TIZaZqgIO0vsKkB13EGvGYoc3oPFcrjoPeOk2rAdxSmV4mC81tzmUW9X6atmPCoBTnz9heBsnJ_Lv-vw0ulAD4yBWZkhnePvH6Uixxq5fGb5C8T0zc8ichRXU17QZADLw4orsIpKaDzznLO_IuSFNHBVB3IYhgaTDWUOG-JdnZGiL6H-ZL91PPy6-eyQfiPIHjNXqsF2v9wLWHg1Kqo3HM7zb3ZTEc82Kc5SWreUSx61CTz_5lfP_ECtG6Oi3DI1aoQ&amp;c=536d9d64&amp;v=3" target="_blank"><img class="ob-image" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/100.jpeg" alt="The Solar-Powered Airplane Proves the Impossible, Possible"><p class="ob-title">The Solar-Powered Airplane Proves the Impossible, Possible</p><p class="ob-source">Dassault Systèmes</p></a></div><div class="outbrain-recommendation"><a href="http://www.goisrael.in/node/616?utm_source=outbrain%E2%80%8E&amp;utm_medium=cpc&amp;utm_content=content&amp;utm_term=&amp;utm_campaign=india_2016" data-ob-url="http://paid.outbrain.com/network/redir?p=SgGBLnsJQTYYlOUkKI3mYoQSjeQ3utHtcfAk5_Y9M7MjwQjzM88CQAmSI1esLiMBNvOtU2Oj5Gs0ClQiiMvGJZqwatlmMX35E-jF-C_USL7e-YWq4ezu3qRxjWyPrfVFOnABmlo4McYah2zmmBOvFybkEFRIYBkRRQMocyGVr4V74qJ7VtgzJL-YZ8UTifE6OQfI6_57qRlOPLAd40-1tQ6-q_LTsr0Yku_1RHitj-SXKMNbJ2w279eQfXGvk8WoYwMfvwj4v1xyjpwM1UqWzecwPZxgYmDPAUUr6sb8Uwy8Cl9BEVNAkbkyqAX_I-fHrlqZ9oSkLMiWoULw-RLBuGjILPpOr6M3DJzR1V6oqQ_WeXcnujygOMw-PjEXAOi1lgmhO2Y7EE0_8zgXO9FaWM_I_NXGW645NlEGTMgU4ogdJusoJ8Dht8A3F8WvkWttCHpY3UZbR8eYiUibxQe1yo0XNhv1NvJEZeRSskAx0xTyytBw35kDB7NjSBatQ2FxGT-rMItg91eKd2rhp2lDgGn2oxhszi51sU2mHmjlqZ4OXjt3EjmocwYf84CLeWAV4O0QMyUxqpvHfy8bqvNoJr4PqbpYioUUxCihT8jLw6jQ6dJ1LtwrZ9aqdlQS00Wi6xRwiI6UtjjU2riM-vfMDA&amp;c=bb40e038&amp;v=3" target="_blank"><img class="ob-image" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/100_002.jpeg" alt="Thinking About an Inspiring Vacation? Think Israel [Video]"><p class="ob-title">Thinking About an Inspiring Vacation? Think Israel [Video]</p><p class="ob-source">goisrael</p></a></div><div class="outbrain-recommendation"><a href="https://www-01.ibm.com/marketing/iwm/dre/signup?source=mrs-form-4448&amp;S_PKG=ov43788&amp;lang=en_in&amp;cm_mmc=Display_Outbrain-_-Systems+-+z+Systems+LinuxONE-_-AS_IN-_-IDC_Whitepaper_ov43788&amp;cm_mmca1=000001GM&amp;cm_mmca2=10001104&amp;cm_mmca3=Headline5_Embrace" data-ob-url="http://paid.outbrain.com/network/redir?p=aC6N3GKOy4Dqe79FTJk4MZYUUy1VaANNoYECS7s7PdFD2MUP6w4Q-hHxvkLB_l6-WASDqPCy7Jro9z-RSc3C-cYEVB5QpEwmsW6K53Q3MLk5FxA1J_Aqn1EWsUeIwBUasYWFhyH8QUruEZ8NkU7C_l0apKvKl0tGJkunpwoe_bwLkZ6AzP98ElvM12iKGgFeDsvqb2rd5JupSt10LL3gzak7W3sYzUJlCJx1a_hVjUsy7s2k9u1B--FgbZUf4mP9QfFXFVzobziJSNyQcSAi_RJS8d_-5qy-YK0TP2C6eWsM3pQp8lWRjeVrxkDsR3kNvol9rbzkRW1lBQC_j3LjdMzfVdTMOhAnKp9gJsamzoZWrGfANH_O4Ym4oUcLUE6AwHVFzE3uRYWASvBcU7VJLtTtJeqNetXpnNoecScXIqelO1nbbzMH02MRd5ej_Np5DrY0KMQBbrPA37G0oevWJR9MusT_Qz68lfJokDD3-rTaSXMnNKLZlLtqTYg1OwS573whSQaQEMyjGIhPyqZTC_UIBRiX7p5y5NDuys0eMDVNcqfR_pFLBglB5BFc6_tRvE4E3pDw7ZZxGT0kN0e6SG7kDJOSyVRS-JBEtRJU59mOvOpT0XKyycxQizhQecJA_vn9gvfDCIcy5wi25s__OOy-_W4H4sJXEpEa2iSm4K9lTcKk43rnhK7zrfX52B0w&amp;c=541afc47&amp;v=3" target="_blank"><img class="ob-image" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/100_006.jpeg" alt="IBM Embraces Open Source Culture in India with LinuxONE [White Paper]"><p class="ob-title">IBM Embraces Open Source Culture in India with LinuxONE [White Paper]</p><p class="ob-source">IBM India</p></a></div><div class="outbrain-recommendation"><a href="https://www.myuniverse.co.in/zipsip?utm_source=outbrain_zipsip_desktop&amp;utm_medium=native-ads&amp;adgroupid=Pa-Jou-Con-Zir-Outb-coZI&amp;dmid=don%E2%80%99t-just-invest.-invest-wisely&amp;utm_content=ZipSIP+-+%E2%80%8BInvest+in+SIP+%28Systematic+Inve&amp;utm_term=118380" data-ob-url="http://paid.outbrain.com/network/redir?p=FNtZsgw5yLdCkqIgNQARlb4Y4DLsOQ53QUSsYnrs-1L1JPjZCubNTuucmPrvhVfigoKuVVGH1Exjs3FzD_4rCEGHkPrFikzW_KrLNX6vljgaFjjY2OlVfXWNCPgl_15vAUUlh0fmGZxg9F9yWtqalmZEMzMXbo7YbeTtsepaip1Cjx5deGybAaRWb6zxeSkIups8qoXeBG4LNv8srW0iZBq07DBTu6wqgYBBdzB36dZjLlF7gcqQgiRYxN7D5u_rTAuylEr7CFmVW5Zw_CG0TVaGZWxh2h2u6xd1tTj323aWFCxK5N_pNAVbUVas1w35Rl3NtWt02UYD8xBCBC9BOIvncVdWiFAlWNMTlBCmoqH2EIDjjUpdS7DBnJlI1umyQQOTMgueBSM837vLQzkqFlUHHZCDYmyx28RdonCGuKRHfhv1clcgD1aWoKTqtjcbss-4tWHBuMg5N3nBF6XfTRPYBkFhPzgc_EG5jS9D7QHQEqr1anevdgfDo49F2042mBtijkiYVgh4CBbSZEDtmzIiwI2-qOodKyxgbnBvYDN_t_YH8Cutr29AU2LoLqx3tLDIto8YhgJCHdzG_XRChNJT1ybJ5-ALI2M9B-eA3JUURYvIeXa7-61SNootXraEsE_NVACQdsG1TyJw9sG0oPNgBQxD7KPOaa0EbPP-bg-1GmPhN8TcM1jj7-FVuK8-&amp;c=7b8f973a&amp;v=3" target="_blank"><img class="ob-image" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/100_005.jpeg" alt="Don’t just invest. Invest wisely"><p class="ob-title">Don’t just invest. Invest wisely</p><p class="ob-source">ABM MyUniverse®</p></a></div><div class="outbrain-recommendation"><a href="https://www.rummycircle.com/bangalorean-engineer-wins-cash-online.html?uid=46&amp;utm_source=OutBrain&amp;utm_medium=Banner&amp;utm_content=Rajshekhar&amp;utm_campaign=Desktop_IND&amp;utm_term=118380" data-ob-url="http://paid.outbrain.com/network/redir?p=UFb9XLOKUwnr0qaj-CujOY4AZWKg17nMKkJKHWN63hIFYI0leI4oVnPdEksd7AhDQVsAg48i5Ll8OFjJLe5WJymIIKNMDgSLq7cf6oaVK12V17Ssb1wWVSlk_T16DQ1itPRm7ys2ZASzUUtHr6cxzx7VrYL5EgsbIXSENb4A9SrAJ-vXk3C702_5N6KH7LzR_nkbS1PqtYgPm-diKnBy8Q3EZZf3RD5113v3BOR9xv4oviQhf3OEPvk2ucqZ_QN4hNR3hxNZF_hlRUoHz6OsgJFA6rZqyJGEFe_rhyKrLTtxu7U4_HInL3Qg1w0Ae4--POooeuVYQCl_Gr1QQ-_wRsMFNOel7H_tXp5MafxRkM1iqa4zp12RJ_R1khCv5uBTgx83A6KzmMuqrerbGInsoAYWmeqrIrDPuSj0tzJ2qP_YLQ-kvVVsh_-SwiYS4yheU1NPU49Fl9y2m2aLxgoBLEZRIUwq4XClg4zEHFfbirmacfL_xX8G0RP1-mrOK0pVuslKcRsdZKGub-KaDb5IV8hC9NYPa2MhjA4-zssvTkTXzzxs5xsfuvHY26lhVZlakjzqWTNf6SYS-XIhHoJyg17ygALz2LScVmF-5QxQWg96T0ngmhk58QkA3hk5r4KIaB_fdfYU1O_rBFQBMjyibv61KTO-nZ9huWLGNU8xVF8kYBR8QOJEgbZ-pSYjtCes&amp;c=2e464a01&amp;v=3" target="_blank"><img class="ob-image" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/100_003.jpeg" alt="Know how a software engineer surprised his wife!"><p class="ob-title">Know how a software engineer surprised his wife!</p><p class="ob-source">RummyCircle</p></a></div><div class="outbrain-recommendation"><a href="http://timesofindia.indiatimes.com/tv/news/hindi/Rashami-Desai-finds-a-husband/articleshow/45886995.cms?intenttarget=no&amp;utm_source=outbrain&amp;utm_medium=cpc&amp;utm_campaign=toi_traffic" data-ob-url="http://paid.outbrain.com/network/redir?p=cuocdgy5zAnIw2GrFrcQTfLR9NufrFFCb2C-BopSF01rr15_lqFYQlOu3i8sTgzxrDnGi7bI1ipFpylsCqblgPA1_J73dEX3UFOdFOgnpH8heFUSfyfwNUDkvMQh_I6H6mRfsTUfBUaHVc3wFYrxz-hG6NkIBYfWjDZtAfutZEwCp0GPgaIsi9s6sfuPQ8qmaOejVLvK4L75fZZKdIJw7EtPpBxmx4r_KfaKt3ocNJxf7gbuZjmlNcLPbf-DDcWmMWOKP1531_aS54DGWzr218cBVaQzdR1HDuIkQbwc9YG4dWqBU_G3vsLTLnxp3o7BQStzgdOYf8KNLSWBuHOO8aBFdheXiwFHkIkQA-PzztpEx3OaHUx7UvfRbHtlqeruFgxifIaRZguy_lmOQvJE3bUlAyVzV0Jt2Hlr_ovSaHbMsKtkN-wYxvMZaL38KeRAwnVliBH3dfkSPTsB_0ys0lT7r-hipmX74mvv_7SSOcRejxeHU3uUvqnzTWBTOXVnkcc3pE72Cu14vinBPUFfK9iL6bW12fZlCwlFU5bwXZaAtU5f_AkXl9RFMFiRpuDY8iAsi3yFqGqJdJuV5bqNOUJeKAqn7EUU-K6wLsAn71A28YW3hV8KfK0AiusAt6K7MIaRR6lQqQZGoUXmYPj_49t6RKracB3inR5ywYcGVZo&amp;c=691473b3&amp;v=3" target="_blank"><img class="ob-image" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/100_004.jpeg" alt="Rashami Desai finds a husband"><p class="ob-title">Rashami Desai finds a husband</p><p class="ob-source">Times of India</p></a></div></div>
+</aside>
+        <aside id="latest-stories">
+  <div class="heading-column">
+    <h3>Today on Ars</h3>
+  </div>
+  <div id="latest-recs" class="rec-wrap listing-earlier"></div>
+</aside>
+  </div>
+</footer>
+    
+  </div>
+</article>
+  </div>
+
+  <footer class="site-footer">
+    <nav class="nav-footer">
+
+	<section>
+		<ul>
+			<li><a href="http://arstechnica.com/rss-feeds/">RSS Feeds</a></li>
+			<li><a rel="nofollow" href="http://arstechnica.com/security/2015/08/how-security-flaws-work-the-buffer-overflow/?view=mobile">View Mobile Site</a></li>
+			<li><a href="http://arstechnica.co.uk/">Visit Ars Technica UK</a></li>
+			<li><a href="http://arstechnica.com/about-us/">About Us</a></li>
+		</ul>
+	</section>
+
+	<section>
+		<ul>
+			<li><a href="http://arstechnica.com/contact-us/">Contact Us</a></li>
+			<li><a href="http://arstechnica.com/staff-directory/">Staff</a></li>
+			<li><a href="http://arstechnica.com/advertise-with-us/">Advertise with us</a></li>
+			<li><a href="http://arstechnica.com/reprints/">Reprints</a></li>
+		</ul>		
+	</section>
+
+</nav>
+
+<section class="footer-terms-logo">
+	<div class="cn-logo">
+		<a href="http://condenast.com/" class="icon icon-logo-cn-us" title="Visit Condé Nast"></a>
+	</div>
+
+	<div id="copyright-terms">
+  WIRED Media Group<br>
+  Use of this Site constitutes acceptance of our <a href="http://www.condenast.com/privacy-policy" target="_blank">User Agreement</a> (effective 1/2/14) and <a href="http://www.condenast.com/privacy-policy#privacypolicy">Privacy Policy</a> (effective 1/2/14), and <a href="http://arstechnica.com/amendment-to-conde-nast-user-agreement-privacy-policy/">Ars Technica Addendum (effective 5/17/2012)</a>. <a href="http://www.condenast.com/privacy-policy#privacypolicy-california">Your California Privacy Rights</a>.
+ The material on this site may not be reproduced, distributed, 
+transmitted, cached or otherwise used, except with the prior written <a href="https://www.condenast.com/reprints-permissions">permission of Condé Nast</a>.
+</div>
+</section>  </footer>
+</div>
+
+<script type="text/javascript" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/main-4df8806d56.js"></script>
+
+  <script type="text/javascript">!function(n,e,t){var s,c;s=function(){var e=n.location.hostname,s=location.search.match(/CNS_SB=([^&\s]+)[&\s]?/)||[],c=e+"/cns"+(s.length?"-sandbox/"+s[1]:"")+"/services.min.js";return t||"//"+c}(),n.cns=n.cns||{async:function(n,e){this.queue[n]||(this.queue[n]=[]),"function"==typeof e&&this.queue[n].push(e)},queue:{}},c=e.createElement("script"),c.async=!0,c.src=s,e.body.appendChild(c)}(window,document, 'http://cdn.arstechnica.net/cns/services.min.js'); </script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/services.js" async=""></script><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/sparrow.js" async="" class="cns-metrics-sparrow"></script>
+<script type="text/javascript" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/ars-28f58ebe5a.js"></script>
+
+<!-- cache hit 177:single/javascript-footer:405a8a380271a3bc71cf448520f701b7 -->
+
+
+<script type="text/javascript">
+  ars.FEATURE = {"assets_path":"http:\/\/cdn.arstechnica.net\/wp-content\/themes\/ars\/assets\/features\/generic"};
+</script>
+<div style="position: absolute; overflow: hidden; width: 0px; height: 0px;"><div style="position: absolute; left: -9999px; top: -9999px;"><object type="application/x-shockwave-flash" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="moatMessageSender9668472964" height="1" width="1"><param name="allowScriptAccess" value="always"><param name="allowFullScreen" value="false"><param name="movie" value="https://z.moatads.com/swf/MessageSenderV4.swf"><param name="FlashVars" value="r=MoatSuperV22.yh.zb&amp;s=MoatSuperV22.yh.zc&amp;e=MoatSuperV22.yh.zd&amp;td=afs.moatads.com"><param name="quality" value="high"><param name="bgcolor" value="#ffffff"><embed type="application/x-shockwave-flash" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/MessageSenderV4.swf" quality="high" flashvars="r=MoatSuperV22.yh.zb&amp;s=MoatSuperV22.yh.zc&amp;e=MoatSuperV22.yh.zd&amp;td=afs.moatads.com" bgcolor="#ffffff" id="moatMessageSenderEmbed9668472964" allowscriptaccess="always" allowfullscreen="false" align="middle" height="1" width="1"></object></div></div><script type="text/javascript" src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/style.js"></script>
+
+
+
+    <!-- Google Analytics start -->
+	<script type="text/javascript">
+	var _gaq = _gaq || [];
+  _gaq.push(
+    ['_setAccount', 'UA-31997-1'],
+    ['_setCustomVar', 1, 'view', "grid"],
+    ['_setCustomVar', 2, 'theme', "light"],
+    ['_setCustomVar', 3, 'logged_in', "false"],
+    ['_setCustomVar', 4, 'show_comments', "false"],
+    ['_setCustomVar', 5, 'is_premier', "false"],
+    ['_trackPageview']
+  );
+	(function() {
+	  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+	</script><iframe src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/iframe.html" scrolling="no" style="margin: 0px; padding: 0px; width: 0px; height: 0px; border: 0px none; overflow: hidden; display: none;" frameborder="0"></iframe>
+  <!-- Google Analytics end -->
+
+  <!-- Parse.ly start -->
+	<script type="text/javascript">
+  (function(d) {
+    var site = "arstechnica.com",
+    b = d.body,
+    e = d.createElement("div");
+    e.innerHTML = '<span id="parsely-cfg" data-parsely-site="'+site+'"></span>';
+    e.id = "parsely-root";
+    e.style.display = "none";
+    b.appendChild(e);
+  })(document);
+
+  (function(s, p, d) {
+    var h=d.location.protocol, i=p+"-"+s,
+    e=d.getElementById(i), r=d.getElementById(p+"-root"),
+    u=h==="https:"?"d1z2jf7jlzjs58.cloudfront.net"
+      :"static."+p+".com";
+    if (e) return;
+    e = d.createElement(s); e.id = i; e.async = true;
+    e.src = h+"//"+u+"/p.js"; r.appendChild(e);
+  })("script", "parsely", document);
+	</script><div style="display: none;" id="parsely-root"><span id="parsely-cfg" data-parsely-site="arstechnica.com"></span><script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/p.js" async="" id="parsely-script"></script></div>
+  <!-- Parse.ly end -->
+
+  <!-- Adobe Tag Mgr. -->
+  <script src="How%20security%20flaws%20work:%20The%20buffer%20overflow%20%7C%20Ars%20Technica_files/satelliteLib-56a425e07376b6977c987d46ef46ba636a6e2036.js"></script>
+
+  <script type="text/javascript">_satellite.pageBottom();</script>
+
+
+
+
+<script type="text/javascript">
+// Sponsored tile
+ars.READY.push(function() {
+  if (!ars.SHOW_ADS) {
+    return;
+  }
+  var xrail = $('.blog-us.category-information-technology').find('.xrail-content').first();
+  var template = $('<div class="sponsored-tile" style="position:relative; background-color: #cccccc; margin-top: 20px;"><div class="sponsored-tag" style="position:absolute; font-size:18px; font-family: \'economica\'; color: black; padding: 8px; background-color: #cccccc; text-transform: uppercase;">Sponsored</div><a href="http://servedby.flashtalking.com/click/3/60733;1797757;50126;211;0/?ft_width=1&ft_height=1&url=http://arstechnica.com/sponsored/to-create-value-businesses-must-be-proactive-not-reactive-about-cybersecurity/"><img src="//cdn.arstechnica.net/wp-content/uploads/2016/08/kpmg.jpg-360x200.jpeg" style="width:100%; height:auto; " /></a><a href="http://arstechnica.com/sponsored/to-create-value-businesses-must-be-proactive-not-reactive-about-cybersecurity/" style="display: block; font-size:18px; color:black; padding: 10px 18px;">To Create Value, Businesses Must Be Proactive—Not Reactive—About Cybersecurity</a></div><img style="width:1px; height:1px;" src="http://servedby.flashtalking.com/imp/3/60733;1797757;201;pixel;ArsTechnica;KPMGArsTechnicaCustomEmbedPromotionalUnit/?cachebuster=' + (Date.now() / 1000 | 0) + '"/>');
+  xrail.find('.featured-video').remove();
+  xrail.append(template);
+});
+
+</script>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"2facee05ce","applicationID":"26427541","transactionName":"ZQFUZEtVW0VWU01QCVxLd1NNXVpYGENQVwFeAQ==","queueTime":0,"applicationTime":202,"atts":"SUZXEgNPSEs=","errorBeacon":"bam.nr-data.net","agent":""}</script>
+</body></html>
