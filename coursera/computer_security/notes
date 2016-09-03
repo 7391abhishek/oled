@@ -13,4 +13,4 @@ Software Security (Black box and White box)
 
 Black Box Security:
 -> Operating System Security.
--> Network Monitoring (Firewall, IDSs)
+-> Network Monitoring (Firewall(upper level security), IDSs(more fine grained))
