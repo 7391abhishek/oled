@@ -1,0 +1,16 @@
+Memory Layout :
+All the static data is known at compile time.
+
+
+STACK : 
+Function Calls : the arguments passed to the function are pushed onto the stack in the reverse order.
+All the elements (formal arguments, local variables) : comprise a stack frame, which is pointed to by the frame pointer (%ebp)
+
+A function saves the values of base pointer and the instrunction pointer on the stack before calling another function.
+See stack.c for explanation.
+
+Injecting Code on stack : 
+1. How to inject code ?
+2. How to get the %eip point to it so that it can be executed ?
+
+Injected code : should be machine specific code and cannot contain zeros, otherwise string functions will not copy it.

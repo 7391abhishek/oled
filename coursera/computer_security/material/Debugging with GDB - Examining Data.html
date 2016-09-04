@@ -1,0 +1,1656 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<!-- Created by texi2html 1.56k from ./gdb.texinfo on 14 February 2002 -->
+
+<title>Debugging with GDB - Examining Data</title>
+</head>
+<body>
+Go to the <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_1.html">first</a>, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_8.html">previous</a>, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_10.html">next</a>, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_29.html">last</a> section, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html">table of contents</a>.
+<p></p><hr><p>
+
+
+</p><h1><a name="SEC51" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC51">Examining Data</a></h1>
+
+<p>
+<a name="IDX308"></a>
+<a name="IDX309"></a>
+<a name="IDX310"></a>
+<a name="IDX311"></a>
+The usual way to examine data in your program is with the <code>print</code>
+command (abbreviated <code>p</code>), or its synonym <code>inspect</code>.  It
+evaluates and prints the value of an expression of the language your
+program is written in (see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_11.html#SEC81">Using GDB with Different Languages</a>).
+
+
+</p><dl compact="compact">
+
+<dt><code>print <var>expr</var></code>
+</dt><dd>
+</dd><dt><code>print /<var>f</var> <var>expr</var></code>
+</dt><dd>
+<var>expr</var> is an expression (in the source language).  By default the
+value of <var>expr</var> is printed in a format appropriate to its data type;
+you can choose a different format by specifying <samp>`/<var>f</var>'</samp>, where
+<var>f</var> is a letter specifying the format; see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC55">Output formats</a>.
+
+</dd><dt><code>print</code>
+</dt><dd>
+</dd><dt><code>print /<var>f</var></code>
+</dt><dd>
+If you omit <var>expr</var>, GDB displays the last value again (from the
+<em>value history</em>; see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC59">Value history</a>).  This allows you to
+conveniently inspect the same value in an alternative format.
+</dd></dl>
+
+<p>
+A more low-level way of examining data is with the <code>x</code> command.
+It examines data in memory at a specified address and prints it in a
+specified format.  See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC56">Examining memory</a>.
+
+
+</p><p>
+If you are interested in information about types, or about how the
+fields of a struct or a class are declared, use the <code>ptype <var>exp</var></code>
+command rather than <code>print</code>.  See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_12.html#SEC114">Examining the Symbol Table</a>.
+
+
+
+</p><ul>
+<li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC52">Expressions</a>: Expressions
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC53">Variables</a>: Program variables
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC54">Arrays</a>: Artificial arrays
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC55">Output Formats</a>: Output formats
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC56">Memory</a>: Examining memory
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC57">Auto Display</a>: Automatic display
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC58">Print Settings</a>: Print settings
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC59">Value History</a>: Value history
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC60">Convenience Vars</a>: Convenience variables
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC61">Registers</a>: Registers
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC62">Floating Point Hardware</a>: Floating point hardware
+</li><li><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC63">Memory Region Attributes</a>: Memory region attributes
+</li></ul>
+
+
+
+<h2><a name="SEC52" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC52">Expressions</a></h2>
+
+<p>
+<a name="IDX312"></a>
+<code>print</code> and many other GDB commands accept an expression and
+compute its value.  Any kind of constant, variable or operator defined
+by the programming language you are using is valid in an expression in
+GDB.  This includes conditional expressions, function calls, casts
+and string constants.  It unfortunately does not include symbols defined
+by preprocessor <code>#define</code> commands.
+
+
+</p><p>
+GDB supports array constants in expressions input by
+the user.  The syntax is {<var>element</var>, <var>element</var>...}.  For example,
+you can use the command <code>print {1, 2, 3}</code> to build up an array in
+memory that is <code>malloc</code>ed in the target program.
+
+
+</p><p>
+Because C is so widespread, most of the expressions shown in examples in
+this manual are in C.  See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_11.html#SEC81">Using GDB with Different Languages</a>, for information on how to use expressions in other
+languages.
+
+
+</p><p>
+In this section, we discuss operators that you can use in GDB
+expressions regardless of your programming language.
+
+
+</p><p>
+Casts are supported in all languages, not just in C, because it is so
+useful to cast a number into a pointer in order to examine a structure
+at that address in memory.
+
+
+</p><p>
+GDB supports these operators, in addition to those common
+to programming languages:
+
+
+</p><dl compact="compact">
+
+<dt><code>@</code>
+</dt><dd>
+<samp>`@'</samp> is a binary operator for treating parts of memory as arrays.
+See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC54">Artificial arrays</a>, for more information.
+
+</dd><dt><code>::</code>
+</dt><dd>
+<samp>`::'</samp> allows you to specify a variable in terms of the file or
+function where it is defined.  See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC53">Program variables</a>.
+
+<a name="IDX313"></a>
+<a name="IDX314"></a>
+<a name="IDX315"></a>
+<a name="IDX316"></a>
+</dd><dt><code>{<var>type</var>} <var>addr</var></code>
+</dt><dd>
+Refers to an object of type <var>type</var> stored at address <var>addr</var> in
+memory.  <var>addr</var> may be any expression whose value is an integer or
+pointer (but parentheses are required around binary operators, just as in
+a cast).  This construct is allowed regardless of what kind of data is
+normally supposed to reside at <var>addr</var>.
+</dd></dl>
+
+
+
+<h2><a name="SEC53" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC53">Program variables</a></h2>
+
+<p>
+The most common kind of expression to use is the name of a variable
+in your program.
+
+
+</p><p>
+Variables in expressions are understood in the selected stack frame
+(see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_7.html#SEC44">Selecting a frame</a>); they must be either:
+
+
+
+</p><ul>
+<li>
+
+global (or file-static)
+</li></ul>
+
+<p>
+or
+
+
+
+</p><ul>
+<li>
+
+visible according to the scope rules of the
+programming language from the point of execution in that frame
+</li></ul>
+
+<p>
+This means that in the function
+
+
+
+</p><pre>foo (a)
+     int a;
+{
+  bar (a);
+  {
+    int b = test ();
+    bar (b);
+  }
+}
+</pre>
+
+<p>
+you can examine and use the variable <code>a</code> whenever your program is
+executing within the function <code>foo</code>, but you can only use or
+examine the variable <code>b</code> while your program is executing inside
+the block where <code>b</code> is declared.
+
+
+</p><p>
+<a name="IDX317"></a>
+There is an exception: you can refer to a variable or function whose
+scope is a single source file even if the current execution point is not
+in this file.  But it is possible to have more than one such variable or
+function with the same name (in different source files).  If that
+happens, referring to that name has unpredictable effects.  If you wish,
+you can specify a static variable in a particular function or file,
+using the colon-colon notation:
+
+
+</p><p>
+<a name="IDX318"></a>
+<a name="IDX319"></a>
+
+</p><pre><var>file</var>::<var>variable</var>
+<var>function</var>::<var>variable</var>
+</pre>
+
+<p>
+Here <var>file</var> or <var>function</var> is the name of the context for the
+static <var>variable</var>.  In the case of file names, you can use quotes to
+make sure GDB parses the file name as a single word--for example,
+to print a global value of <code>x</code> defined in <tt>`f2.c'</tt>:
+
+
+
+</p><pre>(gdb) p 'f2.c'::x
+</pre>
+
+<p>
+<a name="IDX320"></a>
+This use of <samp>`::'</samp> is very rarely in conflict with the very similar
+use of the same notation in C<tt>++</tt>.  GDB also supports use of the C<tt>++</tt>
+scope resolution operator in GDB expressions.
+
+
+</p><p>
+<a name="IDX321"></a>
+<a name="IDX322"></a>
+
+</p><blockquote>
+<p>
+<em>Warning:</em> Occasionally, a local variable may appear to have the
+wrong value at certain points in a function--just after entry to a new
+scope, and just before exit.
+</p></blockquote>
+
+<p>
+You may see this problem when you are stepping by machine instructions.
+This is because, on most machines, it takes more than one instruction to
+set up a stack frame (including local variable definitions); if you are
+stepping by machine instructions, variables may appear to have the wrong
+values until the stack frame is completely built.  On exit, it usually
+also takes more than one machine instruction to destroy a stack frame;
+after you begin stepping through that group of instructions, local
+variable definitions may be gone.
+
+
+</p><p>
+This may also happen when the compiler does significant optimizations.
+To be sure of always seeing accurate values, turn off all optimization
+when compiling.
+
+
+</p><p>
+<a name="IDX323"></a>
+Another possible effect of compiler optimizations is to optimize
+unused variables out of existence, or assign variables to registers (as
+opposed to memory addresses).  Depending on the support for such cases
+offered by the debug info format used by the compiler, GDB
+might not be able to display values for such local variables.  If that
+happens, GDB will print a message like this:
+
+
+
+</p><pre>No symbol "foo" in current context.
+</pre>
+
+<p>
+To solve such problems, either recompile without optimizations, or use a
+different debug info format, if the compiler supports several such
+formats.  For example, GCC, the GNU C/C<tt>++</tt> compiler usually
+supports the <samp>`-gstabs'</samp> option.  <samp>`-gstabs'</samp> produces debug info
+in a format that is superior to formats such as COFF.  You may be able
+to use DWARF2 (<samp>`-gdwarf-2'</samp>), which is also an effective form for
+debug info.  See section `Options for Debugging Your Program or GNU CC' in <cite>Using GNU CC</cite>, for more
+information.
+
+
+
+
+</p><h2><a name="SEC54" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC54">Artificial arrays</a></h2>
+
+<p>
+<a name="IDX324"></a>
+<a name="IDX325"></a>
+It is often useful to print out several successive objects of the
+same type in memory; a section of an array, or an array of
+dynamically determined size for which only a pointer exists in the
+program.
+
+
+</p><p>
+You can do this by referring to a contiguous span of memory as an
+<em>artificial array</em>, using the binary operator <samp>`@'</samp>.  The left
+operand of <samp>`@'</samp> should be the first element of the desired array
+and be an individual object.  The right operand should be the desired length
+of the array.  The result is an array value whose elements are all of
+the type of the left argument.  The first element is actually the left
+argument; the second element comes from bytes of memory immediately
+following those that hold the first element, and so on.  Here is an
+example.  If a program says
+
+
+
+</p><pre>int *array = (int *) malloc (len * sizeof (int));
+</pre>
+
+<p>
+you can print the contents of <code>array</code> with
+
+
+
+</p><pre>p *array@len
+</pre>
+
+<p>
+The left operand of <samp>`@'</samp> must reside in memory.  Array values made
+with <samp>`@'</samp> in this way behave just like other arrays in terms of
+subscripting, and are coerced to pointers when used in expressions.
+Artificial arrays most often appear in expressions via the value history
+(see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC59">Value history</a>), after printing one out.
+
+
+</p><p>
+Another way to create an artificial array is to use a cast.
+This re-interprets a value as if it were an array.
+The value need not be in memory:
+
+</p><pre>(gdb) p/x (short[2])0x12345678
+$1 = {0x1234, 0x5678}
+</pre>
+
+<p>
+As a convenience, if you leave the array length out (as in
+<samp>`(<var>type</var>[])<var>value</var>'</samp>) GDB calculates the size to fill
+the value (as <samp>`sizeof(<var>value</var>)/sizeof(<var>type</var>)'</samp>:
+
+</p><pre>(gdb) p/x (short[])0x12345678
+$2 = {0x1234, 0x5678}
+</pre>
+
+<p>
+Sometimes the artificial array mechanism is not quite enough; in
+moderately complex data structures, the elements of interest may not
+actually be adjacent--for example, if you are interested in the values
+of pointers in an array.  One useful work-around in this situation is
+to use a convenience variable (see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC60">Convenience variables</a>) as a counter in an expression that prints the first
+interesting value, and then repeat that expression via <kbd>RET</kbd>.  For
+instance, suppose you have an array <code>dtab</code> of pointers to
+structures, and you are interested in the values of a field <code>fv</code>
+in each structure.  Here is an example of what you might type:
+
+
+
+</p><pre>set $i = 0
+p dtab[$i++]-&gt;fv
+<kbd>RET</kbd>
+<kbd>RET</kbd>
+...
+</pre>
+
+
+
+<h2><a name="SEC55" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC55">Output formats</a></h2>
+
+<p>
+<a name="IDX326"></a>
+<a name="IDX327"></a>
+By default, GDB prints a value according to its data type.  Sometimes
+this is not what you want.  For example, you might want to print a number
+in hex, or a pointer in decimal.  Or you might want to view data in memory
+at a certain address as a character string or as an instruction.  To do
+these things, specify an <em>output format</em> when you print a value.
+
+
+</p><p>
+The simplest use of output formats is to say how to print a value
+already computed.  This is done by starting the arguments of the
+<code>print</code> command with a slash and a format letter.  The format
+letters supported are:
+
+
+</p><dl compact="compact">
+
+<dt><code>x</code>
+</dt><dd>
+Regard the bits of the value as an integer, and print the integer in
+hexadecimal.
+
+</dd><dt><code>d</code>
+</dt><dd>
+Print as integer in signed decimal.
+
+</dd><dt><code>u</code>
+</dt><dd>
+Print as integer in unsigned decimal.
+
+</dd><dt><code>o</code>
+</dt><dd>
+Print as integer in octal.
+
+</dd><dt><code>t</code>
+</dt><dd>
+Print as integer in binary.  The letter <samp>`t'</samp> stands for "two".
+<a name="DOCF2" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_foot.html#FOOT2">(2)</a>
+
+</dd><dt><code>a</code>
+</dt><dd>
+<a name="IDX328"></a>
+<a name="IDX329"></a>
+Print as an address, both absolute in hexadecimal and as an offset from
+the nearest preceding symbol.  You can use this format used to discover
+where (in what function) an unknown address is located:
+
+
+<pre>(gdb) p/a 0x54320
+$3 = 0x54320 &lt;_initialize_vx+396&gt;
+</pre>
+
+The command <code>info symbol 0x54320</code> yields similar results.
+See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_12.html#SEC114">Examining the Symbol Table</a>.
+
+</dd><dt><code>c</code>
+</dt><dd>
+Regard as an integer and print it as a character constant.
+
+</dd><dt><code>f</code>
+</dt><dd>
+Regard the bits of the value as a floating point number and print
+using typical floating point syntax.
+</dd></dl>
+
+<p>
+For example, to print the program counter in hex (see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC61">Registers</a>), type
+
+
+
+</p><pre>p/x $pc
+</pre>
+
+<p>
+Note that no space is required before the slash; this is because command
+names in GDB cannot contain a slash.
+
+
+</p><p>
+To reprint the last value in the value history with a different format,
+you can use the <code>print</code> command with just a format and no
+expression.  For example, <samp>`p/x'</samp> reprints the last value in hex.
+
+
+
+
+</p><h2><a name="SEC56" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC56">Examining memory</a></h2>
+
+<p>
+You can use the command <code>x</code> (for "examine") to examine memory in
+any of several formats, independently of your program's data types.
+
+
+</p><p>
+<a name="IDX330"></a>
+</p><dl compact="compact">
+
+<dt><code>x/<var>nfu</var> <var>addr</var></code>
+</dt><dd>
+<a name="IDX331"></a>
+ 
+</dd><dt><code>x <var>addr</var></code>
+</dt><dd>
+</dd><dt><code>x</code>
+</dt><dd>
+Use the <code>x</code> command to examine memory.
+</dd></dl>
+
+<p>
+<var>n</var>, <var>f</var>, and <var>u</var> are all optional parameters that specify how
+much memory to display and how to format it; <var>addr</var> is an
+expression giving the address where you want to start displaying memory.
+If you use defaults for <var>nfu</var>, you need not type the slash <samp>`/'</samp>.
+Several commands set convenient defaults for <var>addr</var>.
+
+
+</p><dl compact="compact">
+
+<dt><var>n</var>, the repeat count
+</dt><dd>
+The repeat count is a decimal integer; the default is 1.  It specifies
+how much memory (counting by units <var>u</var>) to display.
+
+</dd><dt><var>f</var>, the display format
+</dt><dd>
+The display format is one of the formats used by <code>print</code>,
+<samp>`s'</samp> (null-terminated string), or <samp>`i'</samp> (machine instruction).
+The default is <samp>`x'</samp> (hexadecimal) initially.
+The default changes each time you use either <code>x</code> or <code>print</code>.
+
+</dd><dt><var>u</var>, the unit size
+</dt><dd>
+The unit size is any of
+
+<dl compact="compact">
+
+<dt><code>b</code>
+</dt><dd>
+Bytes.
+</dd><dt><code>h</code>
+</dt><dd>
+Halfwords (two bytes).
+</dd><dt><code>w</code>
+</dt><dd>
+Words (four bytes).  This is the initial default.
+</dd><dt><code>g</code>
+</dt><dd>
+Giant words (eight bytes).
+</dd></dl>
+
+Each time you specify a unit size with <code>x</code>, that size becomes the
+default unit the next time you use <code>x</code>.  (For the <samp>`s'</samp> and
+<samp>`i'</samp> formats, the unit size is ignored and is normally not written.)
+
+</dd><dt><var>addr</var>, starting display address
+</dt><dd>
+<var>addr</var> is the address where you want GDB to begin displaying
+memory.  The expression need not have a pointer value (though it may);
+it is always interpreted as an integer address of a byte of memory.
+See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC52">Expressions</a>, for more information on expressions.  The default for
+<var>addr</var> is usually just after the last address examined--but several
+other commands also set the default address: <code>info breakpoints</code> (to
+the address of the last breakpoint listed), <code>info line</code> (to the
+starting address of a line), and <code>print</code> (if you use it to display
+a value from memory).
+</dd></dl>
+
+<p>
+For example, <samp>`x/3uh 0x54320'</samp> is a request to display three halfwords
+(<code>h</code>) of memory, formatted as unsigned decimal integers (<samp>`u'</samp>),
+starting at address <code>0x54320</code>.  <samp>`x/4xw $sp'</samp> prints the four
+words (<samp>`w'</samp>) of memory above the stack pointer (here, <samp>`$sp'</samp>;
+see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC61">Registers</a>) in hexadecimal (<samp>`x'</samp>).
+
+
+</p><p>
+Since the letters indicating unit sizes are all distinct from the
+letters specifying output formats, you do not have to remember whether
+unit size or format comes first; either order works.  The output
+specifications <samp>`4xw'</samp> and <samp>`4wx'</samp> mean exactly the same thing.
+(However, the count <var>n</var> must come first; <samp>`wx4'</samp> does not work.)
+
+
+</p><p>
+Even though the unit size <var>u</var> is ignored for the formats <samp>`s'</samp>
+and <samp>`i'</samp>, you might still want to use a count <var>n</var>; for example,
+<samp>`3i'</samp> specifies that you want to see three machine instructions,
+including any operands.  The command <code>disassemble</code> gives an
+alternative way of inspecting machine instructions; see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_8.html#SEC50">Source and machine code</a>.
+
+
+</p><p>
+All the defaults for the arguments to <code>x</code> are designed to make it
+easy to continue scanning memory with minimal specifications each time
+you use <code>x</code>.  For example, after you have inspected three machine
+instructions with <samp>`x/3i <var>addr</var>'</samp>, you can inspect the next seven
+with just <samp>`x/7'</samp>.  If you use <kbd>RET</kbd> to repeat the <code>x</code> command,
+the repeat count <var>n</var> is used again; the other arguments default as
+for successive uses of <code>x</code>.
+
+
+</p><p>
+<a name="IDX332"></a>
+The addresses and contents printed by the <code>x</code> command are not saved
+in the value history because there is often too much of them and they
+would get in the way.  Instead, GDB makes these values available for
+subsequent use in expressions as values of the convenience variables
+<code>$_</code> and <code>$__</code>.  After an <code>x</code> command, the last address
+examined is available for use in expressions in the convenience variable
+<code>$_</code>.  The contents of that address, as examined, are available in
+the convenience variable <code>$__</code>.
+
+
+</p><p>
+If the <code>x</code> command has a repeat count, the address and contents saved
+are from the last memory unit printed; this is not the same as the last
+address printed if several units were printed on the last line of output.
+
+
+
+
+</p><h2><a name="SEC57" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC57">Automatic display</a></h2>
+<p>
+<a name="IDX333"></a>
+<a name="IDX334"></a>
+
+
+</p><p>
+If you find that you want to print the value of an expression frequently
+(to see how it changes), you might want to add it to the <em>automatic
+display list</em> so that GDB prints its value each time your program stops.
+Each expression added to the list is given a number to identify it;
+to remove an expression from the list, you specify that number.
+The automatic display looks like this:
+
+
+
+</p><pre>2: foo = 38
+3: bar[5] = (struct hack *) 0x3804
+</pre>
+
+<p>
+This display shows item numbers, expressions and their current values.  As with
+displays you request manually using <code>x</code> or <code>print</code>, you can
+specify the output format you prefer; in fact, <code>display</code> decides
+whether to use <code>print</code> or <code>x</code> depending on how elaborate your
+format specification is--it uses <code>x</code> if you specify a unit size,
+or one of the two formats (<samp>`i'</samp> and <samp>`s'</samp>) that are only
+supported by <code>x</code>; otherwise it uses <code>print</code>.
+
+
+</p><dl compact="compact">
+
+<dt><code>display <var>expr</var></code>
+</dt><dd>
+<a name="IDX335"></a>
+ 
+Add the expression <var>expr</var> to the list of expressions to display
+each time your program stops.  See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC52">Expressions</a>.
+
+<code>display</code> does not repeat if you press <kbd>RET</kbd> again after using it.
+
+</dd><dt><code>display/<var>fmt</var> <var>expr</var></code>
+</dt><dd>
+For <var>fmt</var> specifying only a display format and not a size or
+count, add the expression <var>expr</var> to the auto-display list but
+arrange to display it each time in the specified format <var>fmt</var>.
+See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC55">Output formats</a>.
+
+</dd><dt><code>display/<var>fmt</var> <var>addr</var></code>
+</dt><dd>
+For <var>fmt</var> <samp>`i'</samp> or <samp>`s'</samp>, or including a unit-size or a
+number of units, add the expression <var>addr</var> as a memory address to
+be examined each time your program stops.  Examining means in effect
+doing <samp>`x/<var>fmt</var> <var>addr</var>'</samp>.  See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC56">Examining memory</a>.
+</dd></dl>
+
+<p>
+For example, <samp>`display/i $pc'</samp> can be helpful, to see the machine
+instruction about to be executed each time execution stops (<samp>`$pc'</samp>
+is a common name for the program counter; see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC61">Registers</a>).
+
+
+</p><dl compact="compact">
+
+<dt><code>undisplay <var>dnums</var>...</code>
+</dt><dd>
+<a name="IDX336"></a>
+ <a name="IDX337"></a>
+ 
+</dd><dt><code>delete display <var>dnums</var>...</code>
+</dt><dd>
+Remove item numbers <var>dnums</var> from the list of expressions to display.
+
+<code>undisplay</code> does not repeat if you press <kbd>RET</kbd> after using it.
+(Otherwise you would just get the error <samp>`No display number ...'</samp>.)
+
+<a name="IDX338"></a>
+</dd><dt><code>disable display <var>dnums</var>...</code>
+</dt><dd>
+Disable the display of item numbers <var>dnums</var>.  A disabled display
+item is not printed automatically, but is not forgotten.  It may be
+enabled again later.
+
+<a name="IDX339"></a>
+</dd><dt><code>enable display <var>dnums</var>...</code>
+</dt><dd>
+Enable display of item numbers <var>dnums</var>.  It becomes effective once
+again in auto display of its expression, until you specify otherwise.
+
+</dd><dt><code>display</code>
+</dt><dd>
+Display the current values of the expressions on the list, just as is
+done when your program stops.
+
+<a name="IDX340"></a>
+</dd><dt><code>info display</code>
+</dt><dd>
+Print the list of expressions previously set up to display
+automatically, each one with its item number, but without showing the
+values.  This includes disabled expressions, which are marked as such.
+It also includes expressions which would not be displayed right now
+because they refer to automatic variables not currently available.
+</dd></dl>
+
+<p>
+If a display expression refers to local variables, then it does not make
+sense outside the lexical context for which it was set up.  Such an
+expression is disabled when execution enters a context where one of its
+variables is not defined.  For example, if you give the command
+<code>display last_char</code> while inside a function with an argument
+<code>last_char</code>, GDB displays this argument while your program
+continues to stop inside that function.  When it stops elsewhere--where
+there is no variable <code>last_char</code>---the display is disabled
+automatically.  The next time your program stops where <code>last_char</code>
+is meaningful, you can enable the display expression once again.
+
+
+
+
+</p><h2><a name="SEC58" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC58">Print settings</a></h2>
+
+<p>
+<a name="IDX341"></a>
+<a name="IDX342"></a>
+GDB provides the following ways to control how arrays, structures,
+and symbols are printed.
+
+
+</p><p>
+These settings are useful for debugging programs in any language:
+
+
+</p><dl compact="compact">
+
+<dt><code>set print address</code>
+</dt><dd>
+<a name="IDX343"></a>
+ 
+</dd><dt><code>set print address on</code>
+</dt><dd>
+GDB prints memory addresses showing the location of stack
+traces, structure values, pointer values, breakpoints, and so forth,
+even when it also displays the contents of those addresses.  The default
+is <code>on</code>.  For example, this is what a stack frame display looks like with
+<code>set print address on</code>:
+
+
+<pre>(gdb) f
+#0  set_quotes (lq=0x34c78 "&lt;&lt;", rq=0x34c88 "&gt;&gt;")
+    at input.c:530
+530         if (lquote != def_lquote)
+</pre>
+
+</dd><dt><code>set print address off</code>
+</dt><dd>
+Do not print addresses when displaying their contents.  For example,
+this is the same stack frame displayed with <code>set print address off</code>:
+
+
+<pre>(gdb) set print addr off
+(gdb) f
+#0  set_quotes (lq="&lt;&lt;", rq="&gt;&gt;") at input.c:530
+530         if (lquote != def_lquote)
+</pre>
+
+You can use <samp>`set print address off'</samp> to eliminate all machine
+dependent displays from the GDB interface.  For example, with
+<code>print address off</code>, you should get the same text for backtraces on
+all machines--whether or not they involve pointer arguments.
+
+<a name="IDX344"></a>
+</dd><dt><code>show print address</code>
+</dt><dd>
+Show whether or not addresses are to be printed.
+</dd></dl>
+
+<p>
+When GDB prints a symbolic address, it normally prints the
+closest earlier symbol plus an offset.  If that symbol does not uniquely
+identify the address (for example, it is a name whose scope is a single
+source file), you may need to clarify.  One way to do this is with
+<code>info line</code>, for example <samp>`info line *0x4537'</samp>.  Alternately,
+you can set GDB to print the source file and line number when
+it prints a symbolic address:
+
+
+</p><dl compact="compact">
+
+<dt><code>set print symbol-filename on</code>
+</dt><dd>
+<a name="IDX345"></a>
+ 
+Tell GDB to print the source file name and line number of a
+symbol in the symbolic form of an address.
+
+</dd><dt><code>set print symbol-filename off</code>
+</dt><dd>
+Do not print source file name and line number of a symbol.  This is the
+default.
+
+<a name="IDX346"></a>
+</dd><dt><code>show print symbol-filename</code>
+</dt><dd>
+Show whether or not GDB will print the source file name and
+line number of a symbol in the symbolic form of an address.
+</dd></dl>
+
+<p>
+Another situation where it is helpful to show symbol filenames and line
+numbers is when disassembling code; GDB shows you the line
+number and source file that corresponds to each instruction.
+
+
+</p><p>
+Also, you may wish to see the symbolic form only if the address being
+printed is reasonably close to the closest earlier symbol:
+
+
+</p><dl compact="compact">
+
+<dt><code>set print max-symbolic-offset <var>max-offset</var></code>
+</dt><dd>
+<a name="IDX347"></a>
+ 
+Tell GDB to only display the symbolic form of an address if the
+offset between the closest earlier symbol and the address is less than
+<var>max-offset</var>.  The default is 0, which tells GDB
+to always print the symbolic form of an address if any symbol precedes it.
+
+<a name="IDX348"></a>
+</dd><dt><code>show print max-symbolic-offset</code>
+</dt><dd>
+Ask how large the maximum offset is that GDB prints in a
+symbolic address.
+</dd></dl>
+
+<p>
+<a name="IDX349"></a>
+<a name="IDX350"></a>
+If you have a pointer and you are not sure where it points, try
+<samp>`set print symbol-filename on'</samp>.  Then you can determine the name
+and source file location of the variable where it points, using
+<samp>`p/a <var>pointer</var>'</samp>.  This interprets the address in symbolic form.
+For example, here GDB shows that a variable <code>ptt</code> points
+at another variable <code>t</code>, defined in <tt>`hi2.c'</tt>:
+
+
+
+</p><pre>(gdb) set print symbol-filename on
+(gdb) p/a ptt
+$4 = 0xe008 &lt;t in hi2.c&gt;
+</pre>
+
+
+<blockquote>
+<p>
+<em>Warning:</em> For pointers that point to a local variable, <samp>`p/a'</samp>
+does not show the symbol name and filename of the referent, even with
+the appropriate <code>set print</code> options turned on.
+</p></blockquote>
+
+<p>
+Other settings control how different kinds of objects are printed:
+
+
+</p><dl compact="compact">
+
+<dt><code>set print array</code>
+</dt><dd>
+<a name="IDX351"></a>
+ 
+</dd><dt><code>set print array on</code>
+</dt><dd>
+Pretty print arrays.  This format is more convenient to read,
+but uses more space.  The default is off.
+
+</dd><dt><code>set print array off</code>
+</dt><dd>
+Return to compressed format for arrays.
+
+<a name="IDX352"></a>
+</dd><dt><code>show print array</code>
+</dt><dd>
+Show whether compressed or pretty format is selected for displaying
+arrays.
+
+<a name="IDX353"></a>
+</dd><dt><code>set print elements <var>number-of-elements</var></code>
+</dt><dd>
+Set a limit on how many elements of an array GDB will print.
+If GDB is printing a large array, it stops printing after it has
+printed the number of elements set by the <code>set print elements</code> command.
+This limit also applies to the display of strings.
+When GDB starts, this limit is set to 200.
+Setting  <var>number-of-elements</var> to zero means that the printing is unlimited.
+
+<a name="IDX354"></a>
+</dd><dt><code>show print elements</code>
+</dt><dd>
+Display the number of elements of a large array that GDB will print.
+If the number is 0, then the printing is unlimited.
+
+<a name="IDX355"></a>
+</dd><dt><code>set print null-stop</code>
+</dt><dd>
+Cause GDB to stop printing the characters of an array when the first
+NULL is encountered.  This is useful when large arrays actually
+contain only short strings.
+The default is off.
+
+<a name="IDX356"></a>
+</dd><dt><code>set print pretty on</code>
+</dt><dd>
+Cause GDB to print structures in an indented format with one member
+per line, like this:
+
+
+<pre>$1 = {
+  next = 0x0,
+  flags = {
+    sweet = 1,
+    sour = 1
+  },
+  meat = 0x54 "Pork"
+}
+</pre>
+
+</dd><dt><code>set print pretty off</code>
+</dt><dd>
+Cause GDB to print structures in a compact format, like this:
+
+
+<pre>$1 = {next = 0x0, flags = {sweet = 1, sour = 1}, \
+meat = 0x54 "Pork"}
+</pre>
+
+This is the default format.
+
+<a name="IDX357"></a>
+</dd><dt><code>show print pretty</code>
+</dt><dd>
+Show which format GDB is using to print structures.
+
+<a name="IDX358"></a>
+</dd><dt><code>set print sevenbit-strings on</code>
+</dt><dd>
+Print using only seven-bit characters; if this option is set,
+GDB displays any eight-bit characters (in strings or
+character values) using the notation <code>\</code><var>nnn</var>.  This setting is
+best if you are working in English (ASCII) and you use the
+high-order bit of characters as a marker or "meta" bit.
+
+</dd><dt><code>set print sevenbit-strings off</code>
+</dt><dd>
+Print full eight-bit characters.  This allows the use of more
+international character sets, and is the default.
+
+<a name="IDX359"></a>
+</dd><dt><code>show print sevenbit-strings</code>
+</dt><dd>
+Show whether or not GDB is printing only seven-bit characters.
+
+<a name="IDX360"></a>
+</dd><dt><code>set print union on</code>
+</dt><dd>
+Tell GDB to print unions which are contained in structures.  This
+is the default setting.
+
+</dd><dt><code>set print union off</code>
+</dt><dd>
+Tell GDB not to print unions which are contained in structures.
+
+<a name="IDX361"></a>
+</dd><dt><code>show print union</code>
+</dt><dd>
+Ask GDB whether or not it will print unions which are contained in
+structures.
+
+For example, given the declarations
+
+
+<pre>typedef enum {Tree, Bug} Species;
+typedef enum {Big_tree, Acorn, Seedling} Tree_forms;
+typedef enum {Caterpillar, Cocoon, Butterfly}
+              Bug_forms;
+
+struct thing {
+  Species it;
+  union {
+    Tree_forms tree;
+    Bug_forms bug;
+  } form;
+};
+
+struct thing foo = {Tree, {Acorn}};
+</pre>
+
+with <code>set print union on</code> in effect <samp>`p foo'</samp> would print
+
+
+<pre>$1 = {it = Tree, form = {tree = Acorn, bug = Cocoon}}
+</pre>
+
+and with <code>set print union off</code> in effect it would print
+
+
+<pre>$1 = {it = Tree, form = {...}}
+</pre>
+
+</dd></dl>
+
+<p>
+These settings are of interest when debugging C<tt>++</tt> programs:
+
+
+</p><dl compact="compact">
+
+<dt><code>set print demangle</code>
+</dt><dd>
+<a name="IDX362"></a>
+ <a name="IDX363"></a>
+ 
+</dd><dt><code>set print demangle on</code>
+</dt><dd>
+Print C<tt>++</tt> names in their source form rather than in the encoded
+("mangled") form passed to the assembler and linker for type-safe
+linkage.  The default is on.
+
+<a name="IDX364"></a>
+</dd><dt><code>show print demangle</code>
+</dt><dd>
+Show whether C<tt>++</tt> names are printed in mangled or demangled form.
+
+<a name="IDX365"></a>
+</dd><dt><code>set print asm-demangle</code>
+</dt><dd>
+</dd><dt><code>set print asm-demangle on</code>
+</dt><dd>
+Print C<tt>++</tt> names in their source form rather than their mangled form, even
+in assembler code printouts such as instruction disassemblies.
+The default is off.
+
+<a name="IDX366"></a>
+</dd><dt><code>show print asm-demangle</code>
+</dt><dd>
+Show whether C<tt>++</tt> names in assembly listings are printed in mangled
+or demangled form.
+
+<a name="IDX367"></a>
+<a name="IDX368"></a>
+<a name="IDX369"></a>
+</dd><dt><code>set demangle-style <var>style</var></code>
+</dt><dd>
+Choose among several encoding schemes used by different compilers to
+represent C<tt>++</tt> names.  The choices for <var>style</var> are currently:
+
+<dl compact="compact">
+
+<dt><code>auto</code>
+</dt><dd>
+Allow GDB to choose a decoding style by inspecting your program.
+
+</dd><dt><code>gnu</code>
+</dt><dd>
+Decode based on the GNU C<tt>++</tt> compiler (<code>g++</code>) encoding algorithm.
+This is the default.
+
+</dd><dt><code>hp</code>
+</dt><dd>
+Decode based on the HP ANSI C<tt>++</tt> (<code>aCC</code>) encoding algorithm.
+
+</dd><dt><code>lucid</code>
+</dt><dd>
+Decode based on the Lucid C<tt>++</tt> compiler (<code>lcc</code>) encoding algorithm.
+
+</dd><dt><code>arm</code>
+</dt><dd>
+Decode using the algorithm in the <cite>C<tt>++</tt> Annotated Reference Manual</cite>.
+<strong>Warning:</strong> this setting alone is not sufficient to allow
+debugging <code>cfront</code>-generated executables.  GDB would
+require further enhancement to permit that.
+
+</dd></dl>
+If you omit <var>style</var>, you will see a list of possible formats.
+
+<a name="IDX370"></a>
+</dd><dt><code>show demangle-style</code>
+</dt><dd>
+Display the encoding style currently in use for decoding C<tt>++</tt> symbols.
+
+<a name="IDX371"></a>
+</dd><dt><code>set print object</code>
+</dt><dd>
+</dd><dt><code>set print object on</code>
+</dt><dd>
+When displaying a pointer to an object, identify the <em>actual</em>
+(derived) type of the object rather than the <em>declared</em> type, using
+the virtual function table.
+
+</dd><dt><code>set print object off</code>
+</dt><dd>
+Display only the declared type of objects, without reference to the
+virtual function table.  This is the default setting.
+
+<a name="IDX372"></a>
+</dd><dt><code>show print object</code>
+</dt><dd>
+Show whether actual, or declared, object types are displayed.
+
+<a name="IDX373"></a>
+</dd><dt><code>set print static-members</code>
+</dt><dd>
+</dd><dt><code>set print static-members on</code>
+</dt><dd>
+Print static members when displaying a C<tt>++</tt> object.  The default is on.
+
+</dd><dt><code>set print static-members off</code>
+</dt><dd>
+Do not print static members when displaying a C<tt>++</tt> object.
+
+<a name="IDX374"></a>
+</dd><dt><code>show print static-members</code>
+</dt><dd>
+Show whether C<tt>++</tt> static members are printed, or not.
+
+<a name="IDX375"></a>
+</dd><dt><code>set print vtbl</code>
+</dt><dd>
+</dd><dt><code>set print vtbl on</code>
+</dt><dd>
+Pretty print C<tt>++</tt> virtual function tables.  The default is off.
+(The <code>vtbl</code> commands do not work on programs compiled with the HP
+ANSI C<tt>++</tt> compiler (<code>aCC</code>).)
+
+</dd><dt><code>set print vtbl off</code>
+</dt><dd>
+Do not pretty print C<tt>++</tt> virtual function tables.
+
+<a name="IDX376"></a>
+</dd><dt><code>show print vtbl</code>
+</dt><dd>
+Show whether C<tt>++</tt> virtual function tables are pretty printed, or not.
+</dd></dl>
+
+
+
+<h2><a name="SEC59" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC59">Value history</a></h2>
+
+<p>
+<a name="IDX377"></a>
+Values printed by the <code>print</code> command are saved in the GDB
+<em>value history</em>.  This allows you to refer to them in other expressions.
+Values are kept until the symbol table is re-read or discarded
+(for example with the <code>file</code> or <code>symbol-file</code> commands).
+When the symbol table changes, the value history is discarded,
+since the values may contain pointers back to the types defined in the
+symbol table.
+
+
+</p><p>
+<a name="IDX378"></a>
+<a name="IDX379"></a>
+<a name="IDX380"></a>
+The values printed are given <em>history numbers</em> by which you can
+refer to them.  These are successive integers starting with one.
+<code>print</code> shows you the history number assigned to a value by
+printing <samp>`$<var>num</var> = '</samp> before the value; here <var>num</var> is the
+history number.
+
+
+</p><p>
+To refer to any previous value, use <samp>`$'</samp> followed by the value's
+history number.  The way <code>print</code> labels its output is designed to
+remind you of this.  Just <code>$</code> refers to the most recent value in
+the history, and <code>$$</code> refers to the value before that.
+<code>$$<var>n</var></code> refers to the <var>n</var>th value from the end; <code>$$2</code>
+is the value just prior to <code>$$</code>, <code>$$1</code> is equivalent to
+<code>$$</code>, and <code>$$0</code> is equivalent to <code>$</code>.
+
+
+</p><p>
+For example, suppose you have just printed a pointer to a structure and
+want to see the contents of the structure.  It suffices to type
+
+
+
+</p><pre>p *$
+</pre>
+
+<p>
+If you have a chain of structures where the component <code>next</code> points
+to the next one, you can print the contents of the next one with this:
+
+
+
+</p><pre>p *$.next
+</pre>
+
+<p>
+You can print successive links in the chain by repeating this
+command--which you can do by just typing <kbd>RET</kbd>.
+
+
+</p><p>
+Note that the history records values, not expressions.  If the value of
+<code>x</code> is 4 and you type these commands:
+
+
+
+</p><pre>print x
+set x=5
+</pre>
+
+<p>
+then the value recorded in the value history by the <code>print</code> command
+remains 4 even though the value of <code>x</code> has changed.
+
+
+</p><dl compact="compact">
+
+<dt><code>show values</code>
+</dt><dd>
+<a name="IDX381"></a>
+ 
+Print the last ten values in the value history, with their item numbers.
+This is like <samp>`p $$9'</samp> repeated ten times, except that <code>show
+values</code> does not change the history.
+
+</dd><dt><code>show values <var>n</var></code>
+</dt><dd>
+Print ten history values centered on history item number <var>n</var>.
+
+</dd><dt><code>show values +</code>
+</dt><dd>
+Print ten history values just after the values last printed.  If no more
+values are available, <code>show values +</code> produces no display.
+</dd></dl>
+
+<p>
+Pressing <kbd>RET</kbd> to repeat <code>show values <var>n</var></code> has exactly the
+same effect as <samp>`show values +'</samp>.
+
+
+
+
+</p><h2><a name="SEC60" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC60">Convenience variables</a></h2>
+
+<p>
+<a name="IDX382"></a>
+GDB provides <em>convenience variables</em> that you can use within
+GDB to hold on to a value and refer to it later.  These variables
+exist entirely within GDB; they are not part of your program, and
+setting a convenience variable has no direct effect on further execution
+of your program.  That is why you can use them freely.
+
+
+</p><p>
+Convenience variables are prefixed with <samp>`$'</samp>.  Any name preceded by
+<samp>`$'</samp> can be used for a convenience variable, unless it is one of
+the predefined machine-specific register names (see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC61">Registers</a>).
+(Value history references, in contrast, are <em>numbers</em> preceded
+by <samp>`$'</samp>.  See section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC59">Value history</a>.)
+
+
+</p><p>
+You can save a value in a convenience variable with an assignment
+expression, just as you would set a variable in your program.
+For example:
+
+
+
+</p><pre>set $foo = *object_ptr
+</pre>
+
+<p>
+would save in <code>$foo</code> the value contained in the object pointed to by
+<code>object_ptr</code>.
+
+
+</p><p>
+Using a convenience variable for the first time creates it, but its
+value is <code>void</code> until you assign a new value.  You can alter the
+value with another assignment at any time.
+
+
+</p><p>
+Convenience variables have no fixed types.  You can assign a convenience
+variable any type of value, including structures and arrays, even if
+that variable already has a value of a different type.  The convenience
+variable, when used as an expression, has the type of its current value.
+
+
+</p><dl compact="compact">
+
+<dt><code>show convenience</code>
+</dt><dd>
+<a name="IDX383"></a>
+ 
+Print a list of convenience variables used so far, and their values.
+Abbreviated <code>show conv</code>.
+</dd></dl>
+
+<p>
+One of the ways to use a convenience variable is as a counter to be
+incremented or a pointer to be advanced.  For example, to print
+a field from successive elements of an array of structures:
+
+
+
+</p><pre>set $i = 0
+print bar[$i++]-&gt;contents
+</pre>
+
+<p>
+Repeat that command by typing <kbd>RET</kbd>.
+
+
+</p><p>
+Some convenience variables are created automatically by GDB and given
+values likely to be useful.
+
+
+</p><dl compact="compact">
+
+<dt><code>$_</code>
+</dt><dd>
+<a name="IDX384"></a>
+ 
+The variable <code>$_</code> is automatically set by the <code>x</code> command to
+the last address examined (see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_9.html#SEC56">Examining memory</a>).  Other
+commands which provide a default address for <code>x</code> to examine also
+set <code>$_</code> to that address; these commands include <code>info line</code>
+and <code>info breakpoint</code>.  The type of <code>$_</code> is <code>void *</code>
+except when set by the <code>x</code> command, in which case it is a pointer
+to the type of <code>$__</code>.
+
+<a name="IDX385"></a>
+</dd><dt><code>$__</code>
+</dt><dd>
+The variable <code>$__</code> is automatically set by the <code>x</code> command
+to the value found in the last address examined.  Its type is chosen
+to match the format in which the data was printed.
+
+</dd><dt><code>$_exitcode</code>
+</dt><dd>
+<a name="IDX386"></a>
+The variable <code>$_exitcode</code> is automatically set to the exit code when
+the program being debugged terminates.
+</dd></dl>
+
+<p>
+On HP-UX systems, if you refer to a function or variable name that
+begins with a dollar sign, GDB searches for a user or system
+name first, before it searches for a convenience variable.
+
+
+
+
+</p><h2><a name="SEC61" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC61">Registers</a></h2>
+
+<p>
+<a name="IDX387"></a>
+You can refer to machine register contents, in expressions, as variables
+with names starting with <samp>`$'</samp>.  The names of registers are different
+for each machine; use <code>info registers</code> to see the names used on
+your machine.
+
+
+</p><dl compact="compact">
+
+<dt><code>info registers</code>
+</dt><dd>
+<a name="IDX388"></a>
+ 
+Print the names and values of all registers except floating-point
+registers (in the selected stack frame).
+
+<a name="IDX389"></a>
+<a name="IDX390"></a>
+</dd><dt><code>info all-registers</code>
+</dt><dd>
+Print the names and values of all registers, including floating-point
+registers.
+
+</dd><dt><code>info registers <var>regname</var> ...</code>
+</dt><dd>
+Print the <em>relativized</em> value of each specified register <var>regname</var>.
+As discussed in detail below, register values are normally relative to
+the selected stack frame.  <var>regname</var> may be any register name valid on
+the machine you are using, with or without the initial <samp>`$'</samp>.
+</dd></dl>
+
+<p>
+GDB has four "standard" register names that are available (in
+expressions) on most machines--whenever they do not conflict with an
+architecture's canonical mnemonics for registers.  The register names
+<code>$pc</code> and <code>$sp</code> are used for the program counter register and
+the stack pointer.  <code>$fp</code> is used for a register that contains a
+pointer to the current stack frame, and <code>$ps</code> is used for a
+register that contains the processor status.  For example,
+you could print the program counter in hex with
+
+
+
+</p><pre>p/x $pc
+</pre>
+
+<p>
+or print the instruction to be executed next with
+
+
+
+</p><pre>x/i $pc
+</pre>
+
+<p>
+or add four to the stack pointer<a name="DOCF3" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_foot.html#FOOT3">(3)</a> with
+
+
+
+</p><pre>set $sp += 4
+</pre>
+
+<p>
+Whenever possible, these four standard register names are available on
+your machine even though the machine has different canonical mnemonics,
+so long as there is no conflict.  The <code>info registers</code> command
+shows the canonical names.  For example, on the SPARC, <code>info
+registers</code> displays the processor status register as <code>$psr</code> but you
+can also refer to it as <code>$ps</code>; and on x86-based machines <code>$ps</code>
+is an alias for the EFLAGS register.
+
+
+</p><p>
+GDB always considers the contents of an ordinary register as an
+integer when the register is examined in this way.  Some machines have
+special registers which can hold nothing but floating point; these
+registers are considered to have floating point values.  There is no way
+to refer to the contents of an ordinary register as floating point value
+(although you can <em>print</em> it as a floating point value with
+<samp>`print/f $<var>regname</var>'</samp>).
+
+
+</p><p>
+Some registers have distinct "raw" and "virtual" data formats.  This
+means that the data format in which the register contents are saved by
+the operating system is not the same one that your program normally
+sees.  For example, the registers of the 68881 floating point
+coprocessor are always saved in "extended" (raw) format, but all C
+programs expect to work with "double" (virtual) format.  In such
+cases, GDB normally works with the virtual format only (the format
+that makes sense for your program), but the <code>info registers</code> command
+prints the data in both formats.
+
+
+</p><p>
+Normally, register values are relative to the selected stack frame
+(see section <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_7.html#SEC44">Selecting a frame</a>).  This means that you get the
+value that the register would contain if all stack frames farther in
+were exited and their saved registers restored.  In order to see the
+true contents of hardware registers, you must select the innermost
+frame (with <samp>`frame 0'</samp>).
+
+
+</p><p>
+However, GDB must deduce where registers are saved, from the machine
+code generated by your compiler.  If some registers are not saved, or if
+GDB is unable to locate the saved registers, the selected stack
+frame makes no difference.
+
+
+
+
+</p><h2><a name="SEC62" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC62">Floating point hardware</a></h2>
+<p>
+<a name="IDX391"></a>
+
+
+</p><p>
+Depending on the configuration, GDB may be able to give
+you more information about the status of the floating point hardware.
+
+
+</p><dl compact="compact">
+
+<dt><code>info float</code>
+</dt><dd>
+<a name="IDX392"></a>
+ 
+Display hardware-dependent information about the floating
+point unit.  The exact contents and layout vary depending on the
+floating point chip.  Currently, <samp>`info float'</samp> is supported on
+the ARM and x86 machines.
+</dd></dl>
+
+
+
+<h2><a name="SEC63" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC63">Memory Region Attributes</a></h2>
+<p>
+<a name="IDX393"></a>
+
+
+</p><p>
+<em>Memory region attributes</em> allow you to describe special handling 
+required by regions of your target's memory.  GDB uses attributes 
+to determine whether to allow certain types of memory accesses; whether to
+use specific width accesses; and whether to cache target memory.
+
+
+</p><p>
+Defined memory regions can be individually enabled and disabled.  When a
+memory region is disabled, GDB uses the default attributes when
+accessing memory in that region.  Similarly, if no memory regions have
+been defined, GDB uses the default attributes when accessing
+all memory.
+
+
+</p><p>
+When a memory region is defined, it is given a number to identify it; 
+to enable, disable, or remove a memory region, you specify that number.
+
+
+</p><dl compact="compact">
+
+<dt><code>mem <var>address1</var> <var>address1</var> <var>attributes</var>...</code>
+</dt><dd>
+<a name="IDX394"></a>
+ 
+Define memory region bounded by <var>address1</var> and <var>address2</var>
+with attributes <var>attributes</var>....
+
+<a name="IDX395"></a>
+</dd><dt><code>delete mem <var>nums</var>...</code>
+</dt><dd>
+Remove memory region numbers <var>nums</var>.
+
+<a name="IDX396"></a>
+</dd><dt><code>disable mem <var>nums</var>...</code>
+</dt><dd>
+Disable memory region numbers <var>nums</var>.
+A disabled memory region is not forgotten.  
+It may be enabled again later.
+
+<a name="IDX397"></a>
+</dd><dt><code>enable mem <var>nums</var>...</code>
+</dt><dd>
+Enable memory region numbers <var>nums</var>.
+
+<a name="IDX398"></a>
+</dd><dt><code>info mem</code>
+</dt><dd>
+Print a table of all defined memory regions, with the following columns
+for each region.
+
+<dl compact="compact">
+
+<dt><em>Memory Region Number</em>
+</dt><dd>
+</dd><dt><em>Enabled or Disabled.</em>
+</dt><dd>
+Enabled memory regions are marked with <samp>`y'</samp>.  
+Disabled memory regions are marked with <samp>`n'</samp>.
+
+</dd><dt><em>Lo Address</em>
+</dt><dd>
+The address defining the inclusive lower bound of the memory region.
+
+</dd><dt><em>Hi Address</em>
+</dt><dd>
+The address defining the exclusive upper bound of the memory region.
+
+</dd><dt><em>Attributes</em>
+</dt><dd>
+The list of attributes set for this memory region.
+</dd></dl>
+</dd></dl>
+
+
+
+<h3><a name="SEC64" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC64">Attributes</a></h3>
+
+
+
+<h4><a name="SEC65" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC65">Memory Access Mode</a></h4>
+<p>
+The access mode attributes set whether GDB may make read or
+write accesses to a memory region.
+
+
+</p><p>
+While these attributes prevent GDB from performing invalid
+memory accesses, they do nothing to prevent the target system, I/O DMA,
+etc. from accessing memory.
+
+
+</p><dl compact="compact">
+
+<dt><code>ro</code>
+</dt><dd>
+Memory is read only.
+</dd><dt><code>wo</code>
+</dt><dd>
+Memory is write only.
+</dd><dt><code>rw</code>
+</dt><dd>
+Memory is read/write (default).
+</dd></dl>
+
+
+
+<h4><a name="SEC66" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC66">Memory Access Size</a></h4>
+<p>
+The acccess size attributes tells GDB to use specific sized
+accesses in the memory region.  Often memory mapped device registers
+require specific sized accesses.  If no access size attribute is
+specified, GDB may use accesses of any size.
+
+
+</p><dl compact="compact">
+
+<dt><code>8</code>
+</dt><dd>
+Use 8 bit memory accesses.
+</dd><dt><code>16</code>
+</dt><dd>
+Use 16 bit memory accesses.
+</dd><dt><code>32</code>
+</dt><dd>
+Use 32 bit memory accesses.
+</dd><dt><code>64</code>
+</dt><dd>
+Use 64 bit memory accesses.
+</dd></dl>
+
+
+
+<h4><a name="SEC67" href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html#TOC67">Data Cache</a></h4>
+<p>
+The data cache attributes set whether GDB will cache target
+memory.  While this generally improves performance by reducing debug
+protocol overhead, it can lead to incorrect results because GDB
+does not know about volatile variables or memory mapped device
+registers.
+
+
+</p><dl compact="compact">
+
+<dt><code>cache</code>
+</dt><dd>
+Enable GDB to cache target memory. 
+</dd><dt><code>nocache (default)</code>
+</dt><dd>
+Disable GDB from caching target memory.
+</dd></dl>
+
+<p></p><hr><p>
+Go to the <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_1.html">first</a>, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_8.html">previous</a>, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_10.html">next</a>, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_29.html">last</a> section, <a href="https://ftp.gnu.org/old-gnu/Manuals/gdb-5.1.1/html_chapter/gdb_toc.html">table of contents</a>.
+
+
+</p></body></html>
